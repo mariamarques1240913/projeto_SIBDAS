@@ -1,0 +1,166 @@
+/* estilos.css */
+
+/* Estilos Gerais */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    font-family: sans-serif;
+}
+
+/* Cabeçalho com fundo Azul Pastel Claro */
+.topo-site {
+    background-color: #eef5f8; /* Azul pastel bem clarinho */
+    color: #2b4c5e;            /* Cor do texto principal */
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-hospital {
+    height: 125px;
+    width: auto;
+}
+
+.topo-site-texto h1 {
+    margin: 0;
+    font-size: 42px;           /* Aumentei ligeiramente para impor mais respeito */
+    letter-spacing: 0.5px;
+    color: #2b4c5e;            /* Título escuro para contrastar com o fundo claro */
+    font-family: 'Arial Black', 'Impact', sans-serif; /* Fonte super BOLD */
+    font-weight: 900;          /* Força máxima do negrito */
+}
+
+.topo-site-texto p {
+    margin: 5px 0 0 0;
+    font-size: 15px;
+    color: #5c8599;            /* Subtítulo em azul médio */
+}
+
+/* Menu de Navegação - Azul Médio Pastel Suave */
+.menu-site {
+    background-color: #7fa4b6; /* Azul médio pastel mais suave */
+    padding: 15px;
+    text-align: center;
+}
+
+.menu-site ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.menu-site a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Conteúdo Principal (Início) */
+.conteudo-principal {
+    padding: 40px;
+    text-align: center;
+}
+
+.conteudo-principal h2 {
+    color: #497183;
+    font-size: 28px;
+}
+
+.conteudo-principal p {
+    color: #666666;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+/* Contentor das Caixas */
+.caixas-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+/* Estilo Base das Caixas */
+.caixa-pastel {
+    padding: 25px;
+    border-radius: 12px;
+    width: 250px;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.caixa-pastel h3 {
+    margin-top: 0;
+}
+
+.caixa-pastel p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* Cores específicas de cada caixa */
+.caixa-servicos { background-color: #e3fafc; border: 1px solid #bbeeec; }
+.caixa-servicos h3 { color: #1c7ed6; }
+
+.caixa-contactos { background-color: #f3f0ff; border: 1px solid #e5dbff; }
+.caixa-contactos h3 { color: #7048e8; }
+
+.caixa-tecnica { background-color: #fff0f6; border: 1px solid #ffdeeb; }
+.caixa-tecnica h3 { color: #d6336c; }
+
+/* Estilos específicos para a página Quem Somos */
+.conteudo-quemsomos {
+    padding: 60px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.conteudo-quemsomos h2 {
+    color: #497183;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.conteudo-quemsomos h3 {
+    color: #497183;
+    font-size: 24px;
+    margin-top: 40px;
+    margin-bottom: 15px;
+}
+
+.conteudo-quemsomos p {
+    color: #333333;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.conteudo-quemsomos .texto-missao {
+    color: #666666;
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Rodapé */
+.rodape-site {
+    background-color: #333333;
+    color: #bbbbbb;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: 60px;
+}
+
+.rodape-site p {
+    margin: 0;
+}
