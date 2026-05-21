@@ -4,55 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospitally - Início</title>
-    
     <link rel="icon" type="image/png" href="../assets/img/coracao.png">
     <link rel="stylesheet" href="../assets/css/estilos.css">
 </head>
 <body>
 
-    <header>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <img src="../assets/img/logotipo_hospital.png" alt="Logótipo Hospitally" style="height: 80px; width: auto;">
+    <header class="topo-site">
+        <img src="../assets/img/logotipo_hospital.png" alt="Logótipo Hospitally" class="logo-hospital">
+        <div class="topo-site-texto">
             <h1>Hospitally</h1>
+            <p>Sistema de Gestão de Cuidados Hospitalares</p>
         </div>
     </header>
 
-    <nav>
+    <nav class="menu-site">
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="quemsomos.html">Quem Somos</a></li>
+            <li><a href="../private/dashboard.html">Área Técnica</a></li>
+        </ul>
     </nav>
 
-    <main style="padding: 40px; font-family: sans-serif; max-width: 1000px; margin: 0 auto; text-align: center;">
-        
-        <div>
-            <h2 style="color: #497183; font-size: 36px; margin-bottom: 20px;">Bem-vindo ao Portal Hospitally</h2>
-            <p style="color: #666666; font-size: 18px; max-width: 700px; margin: 0 auto; line-height: 1.6;">
-                A inovação tecnológica e o cuidado médico dedicados à saúde e ao bem-estar dos nossos pacientes.
-            </p>
+    <div class="banner-container">
+        <img src="../assets/img/banner.png" alt="Hospital Hospitally" class="banner-imagem">
+        <div class="banner-texto">
+            <h2>Inovação Tecnológica ao Serviço da Saúde</h2>
         </div>
-        
-        <div style="display: flex; justify-content: center; gap: 25px; margin-top: 40px; flex-wrap: wrap;">
-            
-            <div style="background-color: #e3fafc; border: 1px solid #bbeeec; padding: 25px; border-radius: 12px; width: 250px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <h3 style="color: #1c7ed6; margin-top: 0;">Os nossos Serviços</h3>
-                <p style="color: #666; font-size: 15px; line-height: 1.5;">Conheça a nossa unidade de cuidados continuados e assistência médica especializada.</p>
+    </div>
+
+    <main class="conteudo-principal">
+        <h2>Bem-vindo ao Portal de Gestão Hospitally</h2>
+        <p>Selecione uma das áreas abaixo para navegar pelos serviços do nosso hospital.</p>
+
+        <div class="caixas-container">
+            <div class="caixa-pastel caixa-servicos">
+                <h3>Nossos Serviços</h3>
+                <p>Conheça a nossa unidade de cuidados continuados e assistência médica especializada.</p>
             </div>
 
-            <div style="background-color: #f3f0ff; border: 1px solid #e5dbff; padding: 25px; border-radius: 12px; width: 250px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <h3 style="color: #7048e8; margin-top: 0;">Contactos</h3>
-                <p style="color: #666; font-size: 15px; line-height: 1.5;">Estamos aqui para ajudar. Encontre a nossa localização, telefones e horários de visita.</p>
+            <div class="caixa-pastel caixa-contactos">
+                <h3>Contactos</h3>
+                <p>Estamos aqui para ajudar. Encontre a nossa localização, telefones e horários de visita.</p>
             </div>
 
-            <div style="background-color: #fff0f6; border: 1px solid #ffdeeb; padding: 25px; border-radius: 12px; width: 250px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <h3 style="color: #d6336c; margin-top: 0;">Área Técnica</h3>
-                <p style="color: #666; font-size: 15px; line-height: 1.5;">Portal interno focado na gestão de dispositivos médicos e inventário clínico.</p>
+            <div class="caixa-pastel caixa-tecnica">
+                <h3>Área Técnica</h3>
+                <p>Portal interno focado na gestão de dispositivos médicos e inventário clínico.</p>
             </div>
-w
         </div>
-
     </main>
-    <footer style="background-color: #f8f9fa; border-top: 1px solid #e9ecef; padding: 20px; text-align: center; margin-top: 50px;">
-        <p style="color: #adb5bd; font-size: 14px; margin: 0; font-family: sans-serif;">
-            &copy; 2026 Hospitally - Sistema de Gestão de Cuidados Continuados. Todos os direitos reservados.
-        </p>
+
+    <footer class="rodape-site">
+        <p>&copy; 2026 Hospitally. Todos os direitos reservados.</p>
     </footer>
 
 </body>

@@ -164,3 +164,37 @@ body {
 .rodape-site p {
     margin: 0;
 }
+
+/* Banner de Imagem Central */
+.banner-container {
+    position: relative;
+    max-width: 1200px;     /* Alinha o tamanho com a largura ideal do site */
+    margin: 25px auto;     /* Centra o banner e dá espaço do menu */
+    padding: 0 40px;       /* Mantém as margens laterais alinhadas com o cabeçalho */
+}
+
+.banner-imagem {
+    width: 100%;
+    height: 380px;         /* Altura ideal para não tapar o ecrã todo */
+    object-fit: cover;     /* Ajusta a imagem inteligentemente sem a distorcer */
+    border-radius: 12px;   /* Cantos arredondados iguais aos das tuas caixas pastel */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra super suave */
+}
+
+/* Caixa de texto por cima da imagem */
+.banner-texto {
+    position: absolute;
+    bottom: 35px;
+    left: 75px;
+    background-color: rgba(255, 255, 255, 0.85); /* Fundo branco meio transparente */
+    padding: 15px 25px;
+    border-radius: 8px;
+    border-left: 5px solid #7fa4b6; /* Linha de detalhe com o azul do menu */
+}
+
+.banner-texto h2 {
+    margin: 0;
+    color: #2b4c5e;        /* Azul escuro igual ao título principal */
+    font-size: 24px;
+    font-family: sans-serif;
+}
