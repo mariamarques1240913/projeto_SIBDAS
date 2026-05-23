@@ -1,4 +1,3 @@
-
 body {
     margin: 0;
     padding: 0;
@@ -19,7 +18,7 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
     line-height: 1.6;
 }
 
-/*caveçalho do site */
+/* Cabeçalho do site */
 .topo-site {
     background-color: #eef5f8; /* Azul pastel */
     padding: 20px 40px;
@@ -46,28 +45,29 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
     font-size: 15px;
     color: #5c8599; /* Subtítulo em azul */
 }
-/*menu de navegaçã do site */
+
+/* Menu de navegação do site */
 .menu-site {
     background-color: #7fa4b6; /* Azul médio pastel */
     padding: 0;
+    position: relative;        /* Essencial para conter o posicionamento do botão */
 }
 
 .menu-site ul {
-    display: flex;
-    justify-content: center; /* Centra os links principais (Início, Quem Somos, FAQ) */
-    align-items: center;     /* Alinha verticalmente a meio */
     list-style-type: none;
     margin: 0;
-    padding: 0 40px;         /* Afastamento de segurança nas laterais */
-    position: relative;      /* Permite posicionar a zona-login de forma independente */
+    padding: 0 40px;
     width: 100%;
-    height: 55px;            /* Altura fixa controlada para a barra */
-    box-sizing: border-box;  /* Evita que o padding alargue a barra para fora do ecrã */
+    min-height: 55px;
+    display: flex;
+    justify-content: center;   /* Garante os links rigorosamente no centro */
+    align-items: center;
+    flex-wrap: wrap;           /* Permite a quebra de linha correta */
+    box-sizing: border-box;
 }
 
-/* Espaçamento entre as opções do centro */
 .menu-site ul li {
-    margin: 0 20px;
+    padding: 10px 15px;        
 }
 
 .menu-site a {
@@ -79,14 +79,30 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
 }
 
 .menu-site a:hover {
-    color: #eef5f8;          /* Feedback visual suave ao passar o rato */
+    color: #eef5f8;            /* Feedback visual suave ao passar o rato */
 }
 
-/* Coloca a zona-login colada à direita de forma independente */
+/* Alinhamento da zona-login em ecrãs normais (Links no centro, botão na direita) */
 .menu-site ul li.zona-login {
     position: absolute;
-    right: 40px;             /* Alinhado com o preenchimento lateral da barra */
-    margin: 0;
+    right: 40px;
+    display: flex;
+    align-items: center;
+}
+
+/* COMPORTAMENTO AO MINIMIZAR: Adaptação para ecrãs pequenos */
+@media (max-width: 768px) {
+    .menu-site ul {
+        justify-content: center;
+        padding: 10px 20px;
+    }
+    
+    .menu-site ul li.zona-login {
+        position: static;      /* Liberta o botão para criar a sua própria linha */
+        width: 100%;           /* Ocupa a largura total abaixo dos links */
+        justify-content: center; /* Centraliza o botão de utilizador na nova linha */
+        margin-top: 5px;
+    }
 }
 
 /* Estilo do Botão do Utilizador */
@@ -162,7 +178,8 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
 .caixa-pastel {
     padding: 25px;
     border-radius: 12px;
-    width: 250px;
+    width: 100%;             /* Ocupa a largura disponível... */
+    max-width: 250px;        /* mas nunca passa de 250px! */
     text-align: left;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
@@ -277,9 +294,11 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
     padding: 40px;
     background-color: #ffffff;
     margin: 30px auto;
-    max-width: 600px;
+    width: 90%;              /* Garante que em ecrãs pequenos o formulário não cola às bordas do ecrã */
+    max-width: 600px;        /* Em ecrãs grandes, estaciona nos 600px */
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;  /* Crucial para o padding não "empurrar" o formulário para fora */
 }
 
 #contacto h2 {
