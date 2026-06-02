@@ -309,7 +309,7 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
 #contacto form {
     display: flex;             /* layout flexível */
     flex-direction: column;    /* Organiza os elementos na vertical */
-    max-width: 500px;          /* Limita a largura do formulário */
+    width: 100%;          /* adapta-se totalmente aos 600px da caixa */
     margin: 0 auto;            /* Centraliza horizontalmente */
 }
 
