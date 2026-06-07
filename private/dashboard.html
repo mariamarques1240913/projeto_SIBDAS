@@ -20,7 +20,9 @@
 <body>
     <nav class="navbar navbar-dark sticky-top shadow-sm">
     <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold" href="#">
+        
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+            <img src="../assets/img/logotipo_hospital.png" alt="Logo Hospitally" height="52" class="d-inline-block align-text-top me-2 my-n2" style="margin-top: -8px; margin-bottom: -8px;">
             HOSPITALLY <span class="fs-6 fw-normal ms-2">| Área Restrita</span>
         </a>
         
@@ -30,23 +32,58 @@
             </a>
         </div>
     </div>
-</nav>
+    </nav>
 
     <div class="container-fluid">
         <div class="row">
             
             <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar p-3 border-end" style="min-height: calc(100vh - 56px);">
-                <h5 class="text-secondary small text-uppercase fw-bold">Menu</h5>
-                </nav>
+                <div class="position-sticky pt-3">
+                    <h5 class="text-secondary small text-uppercase fw-bold mb-3">Menu</h5>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link active fw-bold py-2 px-3 rounded shadow-sm text-white" aria-current="page" href="equipamentos.html" style="background-color: #1d5370;">
+                                <i class="fa-solid fa-microscope me-2"></i>
+                                <span>Equipamentos Médicos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link py-2 px-3 text-muted" href="localizacoes.html">
+                                <i class="fa-solid fa-map-location-dot me-2" style="color: #7097a8;"></i>
+                                <span>Localizações Hospitalares</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link py-2 px-3 text-muted" href="fornecedores.html">
+                                <i class="fa-solid fa-truck-field me-2" style="color: #7097a8;"></i>
+                                <span>Fornecedores</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link py-2 px-3 text-muted" href="documentacao.html">
+                                <i class="fa-solid fa-file-medical me-2" style="color: #7097a8;"></i>
+                                <span>Documentação Técnica</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link py-2 px-3 text-muted" href="garantias.html">
+                                <i class="fa-solid fa-file-signature me-2" style="color: #7097a8;"></i>
+                                <span>Garantias e Contratos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-4">
-            <h1 class="h3 fw-bold" style="color: #1d5370;">Painel de Controlo</h1>
-            <p class="text-muted">Área de Gestão do Inventário Hospitalar.</p>
+                <h1 class="h3 fw-bold" style="color: #1d5370;">Painel de Controlo</h1>
+                <p class="text-muted">Área de Gestão do Inventário Hospitalar.</p>
 
-            <footer class="pt-4 mt-5 text-muted border-top">
-                2026 Hospitally &middot; Sistema de Gestão Hospitalar Privado
-            </footer>
-        </main>
+                <footer class="pt-4 mt-5 text-muted border-top">
+                    &copy; 2026 Hospitally &middot; Sistema de Gestão Hospitalar Privado
+                </footer>
+            </main>
 
         </div>
     </div>
