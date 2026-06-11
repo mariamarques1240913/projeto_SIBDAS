@@ -160,14 +160,22 @@
                     </div>
 
                     <div class="col-12 col-lg-6">
-                        <div class="card border-0 shadow-sm rounded p-4 bg-white h-100">
+                        <div class="card border-0 shadow-sm rounded p-4 bg-white">
+                            <h5 class="fw-bold mb-3" style="color: #1d5370;">
+                                <i class="fa-solid fa-chart-bar me-2" style="color: #b2dfdb;"></i>Equipamentos por Serviço
+                            </h5>
+                            <p class="text-muted small">Volume de inventário alocado em cada ala do hospital.</p>
+                            
+                            <div style="max-height: 260px; position: relative;">
+                                <canvas id="graficoServicos"></canvas>
+                            </div>
                         </div>
                     </div>
 
                 </div>
 
                 <footer class="pt-4 mt-5 text-muted border-top">
-                    &copy; 2026 Hospitally &middot; Sistema de Gestão Hospitalar Privado
+                    &copy; 2026 Hospitally &middot; Systema de Gestão Hospitalar Privado
                 </footer>
             </main>
         </div>
@@ -177,6 +185,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        // render do grafico donut (estados)
         const ctxEstado = document.getElementById('graficoEstado').getContext('2d');
         
         new Chart(ctxEstado, {
@@ -207,6 +216,49 @@
                                 size: 12
                             }
                         }
+                    }
+                }
+            }
+        });
+
+        
+        const ctxServicos = document.getElementById('graficoServicos').getContext('2d');
+        
+        new Chart(ctxServicos, {
+            type: 'bar',
+            data: {
+                labels: ['Urgências', 'Bloco Operatório', 'UCI', 'Radiologia', 'Consultas'],
+                datasets: [{
+                    label: 'Equipamentos',
+                    data: [45, 38, 22, 25, 12],
+                    backgroundColor: [
+                        '#a2c2cf', 
+                        '#ffb3ba', 
+                        '#b39ddb', 
+                        '#b2dfdb', 
+                        '#ffc6ff'
+                    ],
+                    borderRadius: 5,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Segoe UI' } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Segoe UI' } }
                     }
                 }
             }
