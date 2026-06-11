@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-8 text-md-end">
-                        <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;">
+                        <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;" data-bs-toggle="modal" data-bs-target="#modalNovoFornecedor">
                             <i class="fa-solid fa-plus me-2"></i>Novo Fornecedor
                         </button>
                     </div>
@@ -113,12 +113,10 @@
                         <tbody>
                             <tr>
                                 <td class="text-center fw-bold text-secondary">1</td>
-                                
-                                <td>Dräger Portugal Lda.</td>
-                                <td>214 907 500</td>
-                                <td>assistencia.pt@draeger.com</td>
-                                <td>501234567</td>
-                                
+                                <td class="text-center">Dräger Portugal Lda.</td>
+                                <td class="text-center">214 907 500</td>
+                                <td class="text-center">assistencia.pt@drager.com</td>
+                                <td class="text-center">501234567</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <button class="btn btn-outline-primary" title="Editar">
@@ -139,6 +137,64 @@
                 </footer>
             </main>
 
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalNovoFornecedor" tabindex="-1" aria-labelledby="modalNovoFornecedorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                
+                <div class="modal-header text-white" style="background-color: #1d5370;">
+                    <h5 class="modal-title fw-bold" id="modalNovoFornecedorLabel">
+                        <i class="fa-solid fa-truck-field me-2"></i>Registar Novo Fornecedor
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <form id="formNovoFornecedor">
+                        <div class="row g-3">
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Nome da Empresa</label>
+                                <input type="text" class="form-control" placeholder="Ex: Dräger Portugal Lda." required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">NIF (Número de Identificação Fiscal)</label>
+                                <input type="text" class="form-control" placeholder="Ex: 501234567" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Contacto Telefónico</label>
+                                <input type="tel" class="form-control" placeholder="Ex: 214 907 500" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">E-mail de Contacto</label>
+                                <input type="email" class="form-control" placeholder="Ex: contacto@empresa.com" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Tipo de Dispositivos / Especialidade</label>
+                                <input type="text" class="form-control" placeholder="Ex: Ventiladores e Bloco Operatório">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Morada / Sede</label>
+                                <input type="text" class="form-control" placeholder="Ex: Rua da Tecnologia, Lisboa">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formNovoFornecedor" class="btn text-white fw-bold px-4" style="background-color: #7fa2b1;">Salvar Registo</button>
+                </div>
+
+            </div>
         </div>
     </div>
 
