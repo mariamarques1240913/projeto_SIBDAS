@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospitally - Dashboard</title>
     
-    <link rel="icon" type="image/png" href="../assets/img/coracao.png">
+    <link class="icon" type="image/png" href="../assets/img/coracao.png">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -174,8 +174,60 @@
 
                 </div>
 
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm rounded p-4 bg-white">
+                            <h5 class="fw-bold mb-3" style="color: #1d5370;">
+                                <i class="fa-solid fa-bell me-2" style="color: #ffb3ba;"></i>Alertas Críticos e Manutenções Urgentes
+                            </h5>
+                            <p class="text-muted small">Intervenções técnicas e prazos de garantia que requerem atenção imediata.</p>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center">ID</th>
+                                            <th class="text-center">Equipamento</th>
+                                            <th class="text-center">Serviço</th>
+                                            <th class="text-center">Tipo de Ocorrência</th>
+                                            <th class="text-center">Data Limite</th>
+                                            <th class="text-center">Criticidade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-bold text-center">#EQ-0412</td>
+                                            <td class="text-center">Ventilador Pulmonar Oxylog</td>
+                                            <td class="text-center">UCI</td>
+                                            <td class="text-center">Calibração Preventiva</td>
+                                            <td class="text-center">18/06/2026</td>
+                                            <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #ffb3ba; color: #721c24;">Alta</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-center">#EQ-0922</td>
+                                            <td class="text-center">Monitor Sinais Vitais</td>
+                                            <td class="text-center">Urgências</td>
+                                            <td class="text-center">Fim de Garantia</td>
+                                            <td class="text-center">22/06/2026</td>
+                                            <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #ffc6ff; color: #4a154b;">Média</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-center">#EQ-0115</td>
+                                            <td class="text-center">Desfibrilhador Lifepak</td>
+                                            <td class="text-center">Bloco Operatório</td>
+                                            <td class="text-center">Substituição de Bateria</td>
+                                            <td class="text-center">30/06/2026</td>
+                                            <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #b2dfdb; color: #0e433e;">Normal</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <footer class="pt-4 mt-5 text-muted border-top">
-                    &copy; 2026 Hospitally &middot; Systema de Gestão Hospitalar Privado
+                    &copy; 2026 Hospitally &middot; Sistema de Gestão Hospitalar Privado
                 </footer>
             </main>
         </div>
@@ -185,7 +237,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // render do grafico donut (estados)
+        
         const ctxEstado = document.getElementById('graficoEstado').getContext('2d');
         
         new Chart(ctxEstado, {
