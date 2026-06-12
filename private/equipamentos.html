@@ -13,21 +13,38 @@
         .navbar {
             background-color: #7fa2b1 !important;
         }
+        .modal-header-hospital {
+            background-color: #1d5370 !important;
+        }
+        .nav-tabs .nav-link.active {
+            color: #1d5370 !important;
+            border-color: #dee2e6 #dee2e6 #fff !important;
+            font-weight: bold;
+        }
+        .nav-tabs .nav-link {
+            color: #7fa2b1 !important;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #1d5370 !important;
+        }
+        .border-hospital {
+            border-left: 4px solid #1d5370 !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark sticky-top shadow-sm">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard.html">
-            <img src="../assets/img/logotipo_hospital.png" alt="Logo Hospitally" height="52" class="d-inline-block align-text-top me-2" style="margin-top: -8px; margin-bottom: -8px;">
-            HOSPITALLY <span class="fs-6 fw-normal ms-2">| Área Restrita</span>
-        </a>
-        <div class="d-flex align-items-center">
-            <a href="../public/index.html" class="btn btn-sm btn-light fw-bold px-3" style="color: #1d5370;">
-                Sair <i class="fa-solid fa-right-from-bracket ms-1"></i>
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard.html">
+                <img src="../assets/img/logotipo_hospital.png" alt="Logo Hospitally" height="52" class="d-inline-block align-text-top me-2" style="margin-top: -8px; margin-bottom: -8px;">
+                HOSPITALLY <span class="fs-6 fw-normal ms-2">| Área Restrita</span>
             </a>
+            <div class="d-flex align-items-center">
+                <a href="../public/index.html" class="btn btn-sm btn-light fw-bold px-3" style="color: #1d5370;">
+                    Sair <i class="fa-solid fa-right-from-bracket ms-1"></i>
+                </a>
+            </div>
         </div>
-    </div>
     </nav>
 
     <div class="container-fluid">
@@ -36,7 +53,6 @@
             <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar p-3 border-end" style="min-height: calc(100vh - 56px);">
                 <div class="position-sticky pt-3">
                     <h5 class="text-secondary small text-uppercase fw-bold mb-3">Menu</h5>
-                    
                     <ul class="nav flex-column">
                         <li class="nav-item mb-2">
                             <a class="nav-link py-2 px-3 text-muted" href="dashboard.html">
@@ -132,7 +148,7 @@
                                 <td class="text-center pe-3">
                                     <div class="d-flex justify-content-center align-items-center">
                                         <button class="btn btn-sm btn-outline-secondary me-1" title="Consultar Ficha"><i class="fa-solid fa-eye"></i></button>
-                                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar" data-bs-toggle="modal" data-bs-target="#modalNovoEquipamento"><i class="fa-solid fa-pen-to-square"></i></button>
                                         <button class="btn btn-sm btn-outline-danger" title="Remover"><i class="fa-solid fa-trash"></i></button>
                                     </div>
                                 </td>
@@ -157,7 +173,7 @@
                                 <td class="text-center pe-3">
                                     <div class="d-flex justify-content-center align-items-center">
                                         <button class="btn btn-sm btn-outline-secondary me-1" title="Consultar Ficha"><i class="fa-solid fa-eye"></i></button>
-                                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar" data-bs-toggle="modal" data-bs-target="#modalNovoEquipamento"><i class="fa-solid fa-pen-to-square"></i></button>
                                         <button class="btn btn-sm btn-outline-danger" title="Remover"><i class="fa-solid fa-trash"></i></button>
                                     </div>
                                 </td>
@@ -170,45 +186,37 @@
                     &copy; 2026 Hospitally &middot; Sistema de Gestão Hospitalar Privado
                 </footer>
             </main>
-
         </div>
     </div>
 
     <div class="modal fade" id="modalNovoEquipamento" tabindex="-1" aria-labelledby="modalNovoEquipamentoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow">
-                
-                <div class="modal-header text-white" style="background-color: #1d5370;">
+                <div class="modal-header text-white modal-header-hospital">
                     <h5 class="modal-title fw-bold" id="modalNovoEquipamentoLabel">
-                        <i class="fa-solid fa-microscope me-2"></i>Registar Novo Equipamento
+                        <i class="fa-solid fa-microscope me-2"></i>Ficha Técnica do Equipamento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
                 <div class="modal-body p-4">
                     <form id="formNovoEquipamento">
                         <div class="row g-3">
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Nome do Equipamento</label>
                                 <input type="text" class="form-control" placeholder="Ex: Ventilador Clínico" required>
                             </div>
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Categoria / Tipo</label>
                                 <input type="text" class="form-control" placeholder="Ex: Suporte de Vida" required>
                             </div>
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Marca / Modelo</label>
                                 <input type="text" class="form-control" placeholder="Ex: Dräger / Evita V300" required>
                             </div>
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Número de Série (SN)</label>
                                 <input type="text" class="form-control" placeholder="Ex: SN-987654" required>
                             </div>
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Localização Hospitalar</label>
                                 <select class="form-select" required>
@@ -218,7 +226,6 @@
                                     <option value="UCI">UCI - Cama 5</option>
                                 </select>
                             </div>
-                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Criticidade / Risco</label>
                                 <select class="form-select" required>
@@ -227,20 +234,177 @@
                                     <option value="Normal">Normal</option>
                                 </select>
                             </div>
-
                         </div>
                     </form>
                 </div>
-                
                 <div class="modal-footer bg-light border-top-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="formNovoEquipamento" class="btn text-white fw-bold px-4" style="background-color: #7fa2b1;">Salvar Registo</button>
+                    <button type="submit" form="formNovoEquipamento" class="btn text-white fw-bold px-4" style="background-color: #7fa2b1;">Salvar Alterações</button>
                 </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="modalDetalhesEquipamento" tabindex="-1" aria-labelledby="modalDetalhesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header text-white modal-header-hospital border-bottom-0">
+                    <h5 class="modal-title fw-bold" id="modalDetalhesLabel">
+                        <i class="fa-solid fa-info-circle me-2"></i>Ficha do Equipamento
+                    </h5>
+                    <span class="badge bg-light text-dark ms-auto me-3 px-3 py-2" id="badgeInventario">#001</span>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <ul class="nav nav-tabs mb-4" id="equipamentoTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="dados-tab" data-bs-toggle="tab" data-bs-target="#dados-pane" type="button" role="tab"><i class="fa-solid fa-box me-1"></i> Dados Gerais</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="garantia-tab" data-bs-toggle="tab" data-bs-target="#garantia-pane" type="button" role="tab"><i class="fa-solid fa-file-signature me-1"></i> Garantia e Contrato</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="localizacao-tab" data-bs-toggle="tab" data-bs-target="#localizacao-pane" type="button" role="tab"><i class="fa-solid fa-map-location-dot me-1"></i> Localização</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="fornecedor-tab" data-bs-toggle="tab" data-bs-target="#fornecedor-pane" type="button" role="tab"><i class="fa-solid fa-truck me-1"></i> Fornecedor</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="documento-tab" data-bs-toggle="tab" data-bs-target="#documento-pane" type="button" role="tab"><i class="fa-solid fa-file-medical me-1"></i> Documentação</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="equipamentoTabsContent">
+                        <div class="tab-pane fade show active" id="dados-pane" role="tabpanel" tabindex="0">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="small text-muted d-block">Nome do Equipamento</label>
+                                    <strong class="fs-5 text-dark" id="detalheNome">-</strong>
+                                    <span class="text-muted d-block small" id="detalheSubtitulo">-</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted d-block">Marca / Modelo</label>
+                                    <span class="fw-bold text-dark" id="detalheModelo">-</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted d-block">Nº de Série</label>
+                                    <span class="fw-bold text-dark" id="detalheSerie">-</span>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <label class="small text-muted d-block">Criticidade</label>
+                                    <span class="badge bg-danger" id="detalheCriticidade">Criticidade Alta</span>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <label class="small text-muted d-block">Estado Operacional</label>
+                                    <span class="badge bg-success">Operacional</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="garantia-pane" role="tabpanel" tabindex="0">
+                            <div class="p-3 rounded mb-3 border-hospital" style="background-color: #f8f9fa;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="fw-bold text-secondary"><i class="fa-solid fa-shield-halved me-1"></i> Contrato de Manutenção Ativo</span>
+                                    <span class="badge bg-success">Garantia Válida</span>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-sm-4">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Início da Garantia</span>
+                                        <span class="fw-bold text-dark" id="detalheInicio">16/05/2026</span>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Fim da Garantia</span>
+                                        <span class="fw-bold text-dark" id="detalheFim">16/05/2029</span>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Tipo de Contrato</span>
+                                        <span class="fw-bold text-dark">Preventivo e Corretivo (Full Risk)</span>
+                                    </div>
+                                    <div class="col-sm-6 mt-3">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Entidade Responsável</span>
+                                        <span class="fw-bold text-dark" id="detalheEntidade">Dräger Portugal Lda.</span>
+                                    </div>
+                                    <div class="col-sm-6 mt-3">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Próxima Intervenção</span>
+                                        <span class="fw-bold style-text" style="color: #1d5370;">Novembro de 2026</span>
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <span class="text-uppercase text-muted d-block" style="font-size: 11px;">Observações</span>
+                                        <p class="text-muted small bg-white p-2 border rounded mb-0">Inclui todas as peças de desgaste rápido, calibrações e atualizações de firmware oficiais.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="localizacao-pane" role="tabpanel" tabindex="0">
+                            <p class="text-dark"><i class="fa-solid fa-map-pin text-danger me-2"></i>Localização Atual: <strong id="detalheLocalizacao">-</strong></p>
+                        </div>
+
+                        <div class="tab-pane fade" id="fornecedor-pane" role="tabpanel" tabindex="0">
+                            <p class="text-dark"><i class="fa-solid fa-building text-primary me-2"></i>Fornecedor Registado: <strong id="detalheFornecedor">-</strong></p>
+                        </div>
+
+                        <div class="tab-pane fade" id="documento-pane" role="tabpanel" tabindex="0">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item px-0 py-2 small"><i class="fa-solid fa-file-pdf text-danger me-2"></i>Manual_Operacao_Equipamento.pdf</div>
+                                <div class="list-group-item px-0 py-2 small"><i class="fa-solid fa-file-shield text-success me-2"></i>Certificado_Conformidade_CE.pdf</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Fechar Ficha</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalDetalhes = new bootstrap.Modal(document.getElementById('modalDetalhesEquipamento'));
+
+            
+            document.querySelectorAll('[title="Consultar Ficha"]').forEach(botao => {
+                botao.addEventListener('click', function() {
+                    const toggleLinha = this.closest('tr');
+                    
+                    const codInventario = toggleLinha.cells[0].innerText.trim();
+                    const nomeEquipamento = toggleLinha.cells[1].querySelector('.fw-bold').innerText.trim();
+                    const subTexto = toggleLinha.cells[1].querySelector('.text-muted').innerText.trim();
+                    const marcaModelo = toggleLinha.cells[2].innerText.trim();
+                    const numSerie = toggleLinha.cells[3].innerText.trim();
+                    const localizacao = toggleLinha.cells[4].innerText.trim();
+
+                    if (codInventario === '#001') {
+                        document.getElementById('detalheEntidade').innerText = "Dräger Portugal Lda.";
+                        document.getElementById('detalheFornecedor').innerText = "Dräger Medical Solutions (suporte@draeger.pt)";
+                    } else {
+                        document.getElementById('detalheEntidade').innerText = "Zoll Medical Iberia";
+                        document.getElementById('detalheFornecedor').innerText = "Zoll Lifeline Distribution (contacto@zoll.pt)";
+                    }
+
+                    document.getElementById('badgeInventario').innerText = codInventario;
+                    document.getElementById('detalheNome').innerText = nomeEquipamento;
+                    document.getElementById('detalheSubtitulo').innerText = subTexto;
+                    document.getElementById('detalheModelo').innerText = marcaModelo;
+                    document.getElementById('detalheSerie').innerText = numSerie;
+                    document.getElementById('detalheLocalizacao').innerText = localizacao;
+
+                    const primeiroTab = new bootstrap.Tab(document.getElementById('dados-tab'));
+                    primeiroTab.show();
+
+                    modalDetalhes.show();
+                });
+            });
+
+            
+            document.querySelectorAll('[title="Remover"]').forEach(botao => {
+                botao.addEventListener('click', function() {
+                    this.closest('tr').remove();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
