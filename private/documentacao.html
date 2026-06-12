@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-8 text-md-end">
-                        <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;">
+                        <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;" data-bs-toggle="modal" data-bs-target="#modalSubmeterDocumento">
                             <i class="fa-solid fa-paperclip me-2"></i>Submeter Documento
                         </button>
                     </div>
@@ -164,7 +164,7 @@
                                         </button>
                                     </div>
                                 </td>
-                            </tr>
+                             </tr>
                         </tbody>
                     </table>
                 </div>
@@ -173,6 +173,44 @@
                 </footer>
             </main>
 
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSubmeterDocumento" tabindex="-1" aria-labelledby="modalSubmeterDocumentoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header text-white" style="background-color: #1d5370;">
+                    <h5 class="modal-title fw-bold" id="modalSubmeterDocumentoLabel">
+                        <i class="fa-solid fa-paperclip me-2"></i>Submeter Novo Documento
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formSubmeterDocumento">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary small">Equipamento Associado</label>
+                            <input type="text" class="form-control" id="inputEquipamento" placeholder="Ex: Ventilador Pulmonar (#001)" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary small">Tipo de Documento</label>
+                            <select class="form-select" required>
+                                <option value="" selected disabled>Selecione o tipo...</option>
+                                <option value="Manual">Manual do Utilizador</option>
+                                <option value="Guia">Guia de Consulta Rápida</option>
+                                <option value="Relatorio">Relatório de Calibração / Manutenção</option>
+                            </select>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-bold text-secondary small">Escolher Ficheiro</label>
+                            <input type="file" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formSubmeterDocumento" class="btn text-white fw-bold px-4" style="background-color: #7fa2b1;">Submeter Ficheiro</button>
+                </div>
+            </div>
         </div>
     </div>
 
