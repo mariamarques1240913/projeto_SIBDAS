@@ -92,14 +92,14 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-8 text-md-end">
-                                                <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;" data-bs-toggle="modal" data-bs-target="#modalNovaLocalizacao">
+                        <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;" data-bs-toggle="modal" data-bs-target="#modalNovaLocalizacao" onclick="configurarModalParaNovo()">
                             <i class="fa-solid fa-plus me-2"></i>Nova Localização
                         </button>
                     </div>
                 </div>
 
                 <div class="table-responsive bg-white rounded shadow-sm border">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabelaLocalizacoes">
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center ps-3" style="color: #1d5370; width: 80px;">ID</th>
@@ -112,34 +112,34 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-center fw-bold text-secondary">1</td>
-                                <td class="text-center">Edifício Central (A)</td>
-                                <td class="text-center">Piso 2</td>
-                                <td class="text-center">Bloco Operatório</td>
-                                <td class="text-center">Sala de Cirurgia 2</td>
+                                <td class="text-center fw-bold text-secondary id-celula">1</td>
+                                <td class="text-center edificio-celula">Edifício Central (A)</td>
+                                <td class="text-center piso-celula">Piso 2</td>
+                                <td class="text-center servio-celula">Bloco Operatório</td>
+                                <td class="text-center sala-celula">Sala de Cirurgia 2</td>
                                 <td class="text-center pe-3">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-outline-primary" title="Editar">
+                                        <button class="btn btn-outline-primary" title="Editar" onclick="editarLinha(this)">
                                             <i class="fa-solid fa-pen"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger" title="Apagar">
+                                        <button class="btn btn-outline-danger" title="Apagar" onclick="apagarLinha(this)">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center fw-bold text-secondary">2</td>
-                                <td class="text-center">Edifício Geral (B)</td>
-                                <td class="text-center">Piso 0</td>
-                                <td class="text-center">Urgência</td>
-                                <td class="text-center">Sala de Reanimação</td>
+                                <td class="text-center fw-bold text-secondary id-celula">2</td>
+                                <td class="text-center edificio-celula">Edifício Geral (B)</td>
+                                <td class="text-center piso-celula">Piso 0</td>
+                                <td class="text-center servio-celula">Urgência</td>
+                                <td class="text-center sala-celula">Sala de Reanimação</td>
                                 <td class="text-center pe-3">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-outline-primary" title="Editar">
+                                        <button class="btn btn-outline-primary" title="Editar" onclick="editarLinha(this)">
                                             <i class="fa-solid fa-pen"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger" title="Apagar">
+                                        <button class="btn btn-outline-danger" title="Apagar" onclick="apagarLinha(this)">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </div>
@@ -157,44 +157,44 @@
         </div>
     </div>
 
-        <div class="modal fade" id="modalNovaLocalizacao" tabindex="-1" aria-labelledby="modalNovaLocalizacaoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalNovaLocalizacao" tabindex="-1" aria-labelledby="modalNovaLocalizacaoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
-                <div class="modal-header text-white" style="background-color: #1d5370;">
+                <div class="modal-header text-white" style="background-color: #1d5370;" id="modalHeader">
                     <h5 class="modal-title fw-bold" id="modalNovaLocalizacaoLabel">
                         <i class="fa-solid fa-map-location-dot me-2"></i>Registar Nova Localização
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <form id="formNovaLocalizacao">
+                    <form id="formNovaLocalizacao" onsubmit="salvarFormulario(event)">
                         <div class="mb-3">
                             <label class="form-label fw-bold text-secondary small">Edifício / Ala</label>
-                            <input type="text" class="form-control" placeholder="Ex: Edifício Central (A)" required>
+                            <input type="text" id="inputEdificio" class="form-control" placeholder="Ex: Edifício Central (A)" required>
                         </div>
                         <div class="row mb-3">
                             <div class="col-6">
                                 <label class="form-label fw-bold text-secondary small">Piso</label>
-                                <input type="text" class="form-control" placeholder="Ex: Piso 2" required>
+                                <input type="text" id="inputPiso" class="form-control" placeholder="Ex: Piso 2" required>
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-bold text-secondary small">Código da Sala</label>
-                                <input type="text" class="form-control" placeholder="Ex: S-204">
+                                <input type="text" id="inputCodigo" class="form-control" placeholder="Ex: S-204">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold text-secondary small">Serviço Associado</label>
-                            <select class="form-select" required>
+                            <select id="selectServico" class="form-select" required>
                                 <option value="" selected disabled>Selecione o serviço...</option>
-                                <option value="BO">Bloco Operatório</option>
-                                <option value="URG">Urgências</option>
+                                <option value="Bloco Operatório">Bloco Operatório</option>
+                                <option value="Urgência">Urgências</option>
                                 <option value="UCI">UCI</option>
-                                <option value="IMAG">Imagiologia</option>
+                                <option value="Imagiologia">Imagiologia</option>
                             </select>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-bold text-secondary small">Descrição da Sala / Gabinete</label>
-                            <input type="text" class="form-control" placeholder="Ex: Sala de Cirurgia 2" required>
+                            <input type="text" id="inputSala" class="form-control" placeholder="Ex: Sala de Cirurgia 2" required>
                         </div>
                     </form>
                 </div>
@@ -207,5 +207,91 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let linhaSendoEditada = null;
+        const modalBootstrap = new bootstrap.Modal(document.getElementById('modalNovaLocalizacao'));
+
+        
+        function apagarLinha(botao) {
+            botao.closest('tr').remove();
+        }
+
+        
+        function editarLinha(botao) {
+            linhaSendoEditada = botao.closest('tr');
+            
+            
+            const edificio = linhaSendoEditada.querySelector('.edificio-celula').innerText;
+            const piso = linhaSendoEditada.querySelector('.piso-celula').innerText;
+            const servico = linhaSendoEditada.querySelector('.servio-celula').innerText;
+            const sala = linhaSendoEditada.querySelector('.sala-celula').innerText;
+
+            
+            document.getElementById('inputEdificio').value = edificio;
+            document.getElementById('inputPiso').value = piso;
+            document.getElementById('inputSala').value = sala;
+            
+            const select = document.getElementById('selectServico');
+            select.value = select.querySelector(`option[value="${servico}"]`) ? servico : "";
+
+            
+            document.getElementById('modalNovaLocalizacaoLabel').innerHTML = '<i class="fa-solid fa-map-location-dot me-2"></i>Editar Localização';
+            
+        
+            modalBootstrap.show();
+        }
+
+        
+        function configurarModalParaNovo() {
+            linhaSendoEditada = null;
+            document.getElementById('formNovaLocalizacao').reset();
+            document.getElementById('modalNovaLocalizacaoLabel').innerHTML = '<i class="fa-solid fa-map-location-dot me-2"></i>Registar Nova Localização';
+        }
+
+        
+        function salvarFormulario(event) {
+            event.preventDefault();
+
+            const edificio = document.getElementById('inputEdificio').value;
+            const piso = document.getElementById('inputPiso').value;
+            const servico = document.getElementById('selectServico').value;
+            const sala = document.getElementById('inputSala').value;
+
+            if (linhaSendoEditada) {
+            
+                linhaSendoEditada.querySelector('.edificio-celula').innerText = edificio;
+                linhaSendoEditada.querySelector('.piso-celula').innerText = piso;
+                linhaSendoEditada.querySelector('.servio-celula').innerText = servico;
+                linhaSendoEditada.querySelector('.sala-celula').innerText = sala;
+            } else {
+                
+                const tabela = document.getElementById('tabelaLocalizacoes').getElementsByTagName('tbody')[0];
+                const proximoId = tabela.rows.length + 1;
+                
+                const novaLinha = tabela.insertRow();
+                novaLinha.innerHTML = `
+                    <td class="text-center fw-bold text-secondary id-celula">${proximoId}</td>
+                    <td class="text-center edificio-celula">${edificio}</td>
+                    <td class="text-center piso-celula">${piso}</td>
+                    <td class="text-center servio-celula">${servico}</td>
+                    <td class="text-center sala-celula">${sala}</td>
+                    <td class="text-center pe-3">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-outline-primary" title="Editar" onclick="editarLinha(this)">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" title="Apagar" onclick="apagarLinha(this)">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+            }
+
+            
+            modalBootstrap.hide();
+        }
+    </script>
 </body>
 </html>
