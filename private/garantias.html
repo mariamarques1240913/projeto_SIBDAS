@@ -94,7 +94,7 @@
                             <span class="input-group-text bg-white border-end-0 text-muted">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0 ps-0" placeholder="Pesquisar por equipamento...">
+                            <input type="text" id="inputPesquisa" onkeyup="filtrarTabela()" class="form-control border-start-0 ps-0" placeholder="Pesquisar por equipamento...">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-8 text-md-end">
@@ -199,7 +199,7 @@
                 <div class="modal-body p-4">
                     <form id="formRegistarGarantia" onsubmit="salvarFormulario(event)">
                         <div class="mb-3">
-                            <label class="form-label fw-bold text-secondary small">Equipamento Associado</label>
+                            <label class="form-label fw-bold text-secondary small">Equipamento Associated</label>
                             <input type="text" class="form-control" id="inputEquipamentoGarantia" placeholder="Ex: Desfibrilhador Automático (#002)" required>
                         </div>
                         <div class="mb-3">
@@ -263,6 +263,25 @@
                 return `<span class="badge bg-success px-3 py-2"><i class="fa-solid fa-circle-check me-1"></i> Ativa</span>`;
             } else {
                 return `<span class="badge bg-danger px-3 py-2"><i class="fa-solid fa-circle-xmark me-1"></i> Expirada</span>`;
+            }
+        }
+
+        
+        function filtrarTabela() {
+            const filtro = document.getElementById('inputPesquisa').value.toLowerCase();
+            const tabela = document.getElementById('tabelaGarantias');
+            const linhas = tabela.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < linhas.length; i++) {
+                const celulaEquipamento = linhas[i].querySelector('.equipamento-celula');
+                if (celulaEquipamento) {
+                    const textoCel = celulaEquipamento.textContent || celulaEquipamento.innerText;
+                    if (textoCel.toLowerCase().indexOf(filtro) > -1) {
+                        linhas[i].style.display = "";
+                    } else {
+                        linhas[i].style.display = "none";
+                    }
+                }
             }
         }
 

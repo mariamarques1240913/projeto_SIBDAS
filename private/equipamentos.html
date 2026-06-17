@@ -110,7 +110,7 @@
                             <span class="input-group-text bg-white border-end-0 text-muted">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0 ps-0" placeholder="Pesquisar equipamento...">
+                            <input type="text" id="inputPesquisa" class="form-control border-start-0 ps-0" placeholder="Pesquisar equipamento..." oninput="filtrarTabela()">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-8 text-md-end">
@@ -121,7 +121,7 @@
                 </div>
 
                 <div class="table-responsive bg-white rounded shadow-sm border">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabelaEquipamentos">
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center ps-3" style="color: #1d5370; width: 140px;">Cód. Inventário</th>
@@ -200,7 +200,7 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header text-white modal-header-hospital">
                     <h5 class="modal-title fw-bold" id="modalNovoEquipamentoLabel">
-                        <i class="fa-solid fa-microscope me-2"></i>Ficha Técnica do Equipamento
+                        <i class="fa-solid fa-microscope me-2"></i>Ficha Técnico do Equipamento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -370,7 +370,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             const modalDetalhes = new bootstrap.Modal(document.getElementById('modalDetalhesEquipamento'));
 
-            
             document.querySelectorAll('[title="Consultar Ficha"]').forEach(botao => {
                 botao.addEventListener('click', function() {
                     const toggleLinha = this.closest('tr');
@@ -404,13 +403,26 @@
                 });
             });
 
-            
             document.querySelectorAll('[title="Remover"]').forEach(botao => {
                 botao.addEventListener('click', function() {
                     this.closest('tr').remove();
                 });
             });
         });
+
+        function filtrarTabela() {
+            const termoPesquisa = document.getElementById('inputPesquisa').value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabelaEquipamentos tbody tr');
+
+            linhas.forEach(linha => {
+                const textoLinha = linha.innerText.toLowerCase();
+                if (textoLinha.includes(termoPesquisa)) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>
