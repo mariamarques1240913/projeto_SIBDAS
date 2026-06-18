@@ -366,63 +366,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const modalDetalhes = new bootstrap.Modal(document.getElementById('modalDetalhesEquipamento'));
-
-            document.querySelectorAll('[title="Consultar Ficha"]').forEach(botao => {
-                botao.addEventListener('click', function() {
-                    const toggleLinha = this.closest('tr');
-                    
-                    const codInventario = toggleLinha.cells[0].innerText.trim();
-                    const nomeEquipamento = toggleLinha.cells[1].querySelector('.fw-bold').innerText.trim();
-                    const subTexto = toggleLinha.cells[1].querySelector('.text-muted').innerText.trim();
-                    const marcaModelo = toggleLinha.cells[2].innerText.trim();
-                    const numSerie = toggleLinha.cells[3].innerText.trim();
-                    const localizacao = toggleLinha.cells[4].innerText.trim();
-
-                    if (codInventario === '#001') {
-                        document.getElementById('detalheEntidade').innerText = "Dräger Portugal Lda.";
-                        document.getElementById('detalheFornecedor').innerText = "Dräger Medical Solutions (suporte@draeger.pt)";
-                    } else {
-                        document.getElementById('detalheEntidade').innerText = "Zoll Medical Iberia";
-                        document.getElementById('detalheFornecedor').innerText = "Zoll Lifeline Distribution (contacto@zoll.pt)";
-                    }
-
-                    document.getElementById('badgeInventario').innerText = codInventario;
-                    document.getElementById('detalheNome').innerText = nomeEquipamento;
-                    document.getElementById('detalheSubtitulo').innerText = subTexto;
-                    document.getElementById('detalheModelo').innerText = marcaModelo;
-                    document.getElementById('detalheSerie').innerText = numSerie;
-                    document.getElementById('detalheLocalizacao').innerText = localizacao;
-
-                    const primeiroTab = new bootstrap.Tab(document.getElementById('dados-tab'));
-                    primeiroTab.show();
-
-                    modalDetalhes.show();
-                });
-            });
-
-            document.querySelectorAll('[title="Remover"]').forEach(botao => {
-                botao.addEventListener('click', function() {
-                    this.closest('tr').remove();
-                });
-            });
-        });
-
-        function filtrarTabela() {
-            const termoPesquisa = document.getElementById('inputPesquisa').value.toLowerCase();
-            const linhas = document.querySelectorAll('#tabelaEquipamentos tbody tr');
-
-            linhas.forEach(linha => {
-                const textoLinha = linha.innerText.toLowerCase();
-                if (textoLinha.includes(termoPesquisa)) {
-                    linha.style.display = '';
-                } else {
-                    linha.style.display = 'none';
-                }
-            });
-        }
-    </script>
+    <script src="../assets/js/1240913.js"></script>
 </body>
 </html>

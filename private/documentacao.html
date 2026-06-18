@@ -128,7 +128,7 @@
                                 </td>
                                 <td class="text-center ficheiro-celula">
                                     <span class="text-dark"><i class="fa-solid fa-file-pdf text-danger me-2"></i><span class="nome-real-ficheiro">manual_mindray_v3.pdf</span></span>
-                                Platypus</td>
+                                </td>
                                 <td class="text-center text-muted data-celula">10/06/2026</td>
                                 <td class="text-center pe-3">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
@@ -221,130 +221,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        let linhaSendoEditada = null;
-        const modalBootstrap = new bootstrap.Modal(document.getElementById('modalSubmeterDocumento'));
-
-        const mapeamentoBadges = {
-            'Manual': { texto: 'Manual do Utilizador', classe: 'bg-primary' },
-            'Guia': { texto: 'Guia de Consulta Rápida', classe: 'bg-success' },
-            'Relatorio': { texto: 'Relatório de Calibração / Manutenção', classe: 'bg-warning text-dark' }
-        };
-
-        function apagarLinha(botao) {
-            botao.closest('tr').remove();
-        }
-
-        function editarLinha(botao) {
-            linhaSendoEditada = botao.closest('tr');
-
-            const nomeEquipamento = linhaSendoEditada.querySelector('.nome-equipamento').innerText;
-            const refEquipamento = linhaSendoEditada.querySelector('.ref-equipamento').innerText;
-            const tipoValor = linhaSendoEditada.querySelector('.tipo-celula').getAttribute('data-tipo-valor');
-
-            document.getElementById('inputEquipamento').value = `${nomeEquipamento} (${refEquipamento.replace('Inventário: ', '')})`;
-            document.getElementById('selectTipo').value = tipoValor;
-
-            document.getElementById('inputFicheiro').required = false;
-            document.getElementById('labelFicheiro').innerText = 'Substituir Ficheiro (Opcional)';
-
-            document.getElementById('modalSubmeterDocumentoLabel').innerHTML = '<i class="fa-solid fa-paperclip me-2"></i>Editar Documento Técnico';
-            modalBootstrap.show();
-        }
-
-        function configurarModalParaNovo() {
-            linhaSendoEditada = null;
-            document.getElementById('formSubmeterDocumento').reset();
-            document.getElementById('inputFicheiro').required = true;
-            document.getElementById('labelFicheiro').innerText = 'Escolher Ficheiro';
-            document.getElementById('modalSubmeterDocumentoLabel').innerHTML = '<i class="fa-solid fa-paperclip me-2"></i>Submeter Novo Documento';
-        }
-
-        function salvarFormulario(event) {
-            event.preventDefault();
-
-            const equipamentoValor = document.getElementById('inputEquipamento').value;
-            const tipoValor = document.getElementById('selectTipo').value;
-            const inputFich = document.getElementById('inputFicheiro');
-
-            let nomeEquip = equipamentoValor;
-            let refEquip = "Inventário: #---";
-            if (equipamentoValor.includes('(')) {
-                const partes = equipamentoValor.split('(');
-                nomeEquip = partes[0].trim();
-                refEquip = "Inventário: " + partes[1].replace(')', '').trim();
-            }
-
-            const infoBadge = mapeamentoBadges[tipoValor] || { texto: tipoValor, classe: 'bg-secondary' };
-
-            const hoje = new Date();
-            const dataFormatada = String(hoje.getDate()).padStart(2, '0') + '/' + String(hoje.getMonth() + 1).padStart(2, '0') + '/' + hoje.getFullYear();
-
-            if (linhaSendoEditada) {
-                linhaSendoEditada.querySelector('.nome-equipamento').innerText = nomeEquip;
-                linhaSendoEditada.querySelector('.ref-equipamento').innerText = refEquip;
-                
-                const celulaTipo = linhaSendoEditada.querySelector('.tipo-celula');
-                celulaTipo.setAttribute('data-tipo-valor', tipoValor);
-                celulaTipo.innerHTML = `<span class="badge ${infoBadge.classe} px-3 py-2">${infoBadge.texto}</span>`;
-
-                if (inputFich.files.length > 0) {
-                    linhaSendoEditada.querySelector('.nome-real-ficheiro').innerText = inputFich.files[0].name;
-                    linhaSendoEditada.querySelector('.data-celula').innerText = dataFormatada;
-                }
-            } else {
-                const tabela = document.getElementById('tabelaDocumentos').getElementsByTagName('tbody')[0];
-                const proximoId = tabela.rows.length + 1;
-                const nomeFicheiro = inputFich.files.length > 0 ? inputFich.files[0].name : "sem_ficheiro.pdf";
-
-                const novaLinha = tabela.insertRow();
-                novaLinha.innerHTML = `
-                    <td class="text-center fw-bold text-secondary id-celula">${proximoId}</td>
-                    <td class="text-center equipamento-celula">
-                        <div class="fw-bold text-dark nome-equipamento">${nomeEquip}</div>
-                        <small class="text-muted ref-equipamento">${refEquip}</small>
-                    </td>
-                    <td class="text-center tipo-celula" data-tipo-valor="${tipoValor}">
-                        <span class="badge ${infoBadge.classe} px-3 py-2">${infoBadge.texto}</span>
-                    </td>
-                    <td class="text-center ficheiro-celula">
-                        <span class="text-dark"><i class="fa-solid fa-file-pdf text-danger me-2"></i><span class="nome-real-ficheiro">${nomeFicheiro}</span></span>
-                    </td>
-                    <td class="text-center text-muted data-celula">${dataFormatada}</td>
-                    <td class="text-center pe-3">
-                        <div class="d-flex justify-content-center align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-success" title="Visualizar / Download">
-                                <i class="fa-solid fa-download"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary" title="Editar" onclick="editarLinha(this)">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" title="Apagar" onclick="apagarLinha(this)">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-            }
-
-            modalBootstrap.hide();
-        }
-
-        
-        function filtrarTabela() {
-            const termo = document.getElementById('inputPesquisa').value.toLowerCase();
-            const linhas = document.querySelectorAll('#tabelaDocumentos tbody tr');
-
-            linhas.forEach(linha => {
-                const textoLinha = linha.textContent.toLowerCase();
-                if (textoLinha.includes(termo)) {
-                    linha.style.display = '';
-                } else {
-                    linha.style.display = 'none';
-                }
-            });
-        }
-    </script>
+    <script src="../assets/js/1240913.js"></script>
 </body>
 </html>
