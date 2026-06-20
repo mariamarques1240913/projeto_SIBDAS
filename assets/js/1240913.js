@@ -1,5 +1,5 @@
 
-// ---- funções que são usadas em várias páginas ----
+// ---- funções usadas em várias páginas ----
 
 function apagarLinha(botao) {
     botao.closest('tr').remove();
@@ -31,7 +31,7 @@ function validarLogin(event) {
 }
 
 
-// ---- quando a página carrega, vejo em que página estou e inicializo o que for preciso ----
+
 
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('graficoEstado'))      initDashboard();
@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// ---- dashboard - os dois gráficos com Chart.js ----
+// ---- dashboard -----
 
 function initDashboard() {
-    // gráfico de donuts - estado do inventário
+    // gráfico de donuts 
     const ctxEstado = document.getElementById('graficoEstado').getContext('2d');
     new Chart(ctxEstado, {
         type: 'doughnut',
@@ -72,7 +72,7 @@ function initDashboard() {
         }
     });
 
-    // gráfico de barras - equipamentos por serviço
+    // gráfico de barras 
     const ctxServicos = document.getElementById('graficoServicos').getContext('2d');
     new Chart(ctxServicos, {
         type: 'bar',
@@ -104,48 +104,175 @@ function initDashboard() {
 
 function initEquipamentos() {
     const modalDetalhes = new bootstrap.Modal(document.getElementById('modalDetalhesEquipamento'));
+    const modalNovo     = new bootstrap.Modal(document.getElementById('modalNovoEquipamento'));
+    let linhaSendoEditada = null;
 
-    // ao clicar em "Consultar Ficha" preencho o modal com os dados da linha
-    document.querySelectorAll('[title="Consultar Ficha"]').forEach(function(botao) {
-        botao.addEventListener('click', function() {
-            const toggleLinha = this.closest('tr');
+    function badgeClasse(estado) {
+        if (estado === 'Operacional')   return 'bg-success';
+        if (estado === 'Em Manutenção') return 'bg-warning text-dark';
+        if (estado === 'Avariado')      return 'bg-danger';
+        return 'bg-secondary';
+    }
 
-            const codInventario   = toggleLinha.cells[0].innerText.trim();
-            const nomeEquipamento = toggleLinha.cells[1].querySelector('.fw-bold').innerText.trim();
-            const subTexto        = toggleLinha.cells[1].querySelector('.text-muted').innerText.trim();
-            const marcaModelo     = toggleLinha.cells[2].innerText.trim();
-            const numSerie        = toggleLinha.cells[3].innerText.trim();
-            const localizacao     = toggleLinha.cells[4].innerText.trim();
+    function corCriticidade(crit) {
+        if (crit === 'Alta' || crit === 'Suporte de vida') return 'text-danger';
+        if (crit === 'Média') return 'text-warning';
+        return 'text-muted';
+    }
 
-            // dados do fornecedor dependem do equipamento (hardcoded por agora)
-            if (codInventario === '#001') {
-                document.getElementById('detalheEntidade').innerText = 'Dräger Portugal Lda.';
-                document.getElementById('detalheFornecedor').innerText = 'Dräger Medical Solutions (suporte@draeger.pt)';
-            } else {
-                document.getElementById('detalheEntidade').innerText = 'Zoll Medical Iberia';
-                document.getElementById('detalheFornecedor').innerText = 'Zoll Lifeline Distribution (contacto@zoll.pt)';
-            }
+    function abrirDetalhes(linha) {
+        const cod   = linha.cells[0].innerText.trim();
+        const nome  = linha.cells[1].querySelector('.fw-bold').innerText.trim();
+        const subEl = linha.cells[1].querySelector('.text-muted');
+        const sub   = subEl ? subEl.innerText.trim() : '';
+        const mm    = linha.cells[2].innerText.trim();
+        const serie = linha.cells[3].innerText.trim();
+        const loc   = linha.cells[4].innerText.trim();
 
-            document.getElementById('badgeInventario').innerText    = codInventario;
-            document.getElementById('detalheNome').innerText        = nomeEquipamento;
-            document.getElementById('detalheSubtitulo').innerText   = subTexto;
-            document.getElementById('detalheModelo').innerText      = marcaModelo;
-            document.getElementById('detalheSerie').innerText       = numSerie;
-            document.getElementById('detalheLocalizacao').innerText = localizacao;
+        if (cod === '#001') {
+            document.getElementById('detalheEntidade').innerText   = 'Dräger Portugal Lda.';
+            document.getElementById('detalheFornecedor').innerText = 'Dräger Medical Solutions (suporte@draeger.pt)';
+        } else if (cod === '#002') {
+            document.getElementById('detalheEntidade').innerText   = 'Zoll Medical Iberia';
+            document.getElementById('detalheFornecedor').innerText = 'Zoll Lifeline Distribution (contacto@zoll.pt)';
+        } else {
+            document.getElementById('detalheEntidade').innerText   = 'Não especificado';
+            document.getElementById('detalheFornecedor').innerText = 'Não especificado';
+        }
 
-            // abro sempre no primeiro separador
-            const primeiroTab = new bootstrap.Tab(document.getElementById('dados-tab'));
-            primeiroTab.show();
+        document.getElementById('badgeInventario').innerText    = cod;
+        document.getElementById('detalheNome').innerText        = nome;
+        document.getElementById('detalheSubtitulo').innerText   = sub;
+        document.getElementById('detalheModelo').innerText      = mm;
+        document.getElementById('detalheSerie').innerText       = serie;
+        document.getElementById('detalheLocalizacao').innerText = loc;
 
-            modalDetalhes.show();
-        });
+        new bootstrap.Tab(document.getElementById('dados-tab')).show();
+        modalDetalhes.show();
+    }
+
+    function preencherFormulario(linha) {
+        const nome   = linha.cells[1].querySelector('.fw-bold').innerText.trim();
+        const subEl  = linha.cells[1].querySelector('.text-muted');
+        const cat    = subEl ? subEl.innerText.trim() : '';
+        const partes = linha.cells[2].innerText.trim().split(' / ');
+        const marca  = partes[0] || '';
+        const modelo = partes[1] || '';
+        const serie  = linha.cells[3].innerText.trim();
+        const loc    = linha.cells[4].innerText.trim();
+        const badgeEl = linha.cells[5].querySelector('.badge');
+        const estado  = badgeEl ? badgeEl.innerText.trim() : '';
+        const smallEl = linha.cells[5].querySelector('small');
+        const crit    = smallEl ? smallEl.innerText.trim().replace(/^Criticidade\s*/i, '') : '';
+
+        document.getElementById('eq-nome').value      = nome;
+        document.getElementById('eq-categoria').value = cat;
+        document.getElementById('eq-marca').value     = marca;
+        document.getElementById('eq-modelo').value    = modelo;
+        document.getElementById('eq-serie').value     = serie;
+
+        const selLoc = document.getElementById('eq-localizacao');
+        for (let i = 0; i < selLoc.options.length; i++) {
+            if (selLoc.options[i].text === loc) { selLoc.selectedIndex = i; break; }
+        }
+
+        document.getElementById('eq-estado').value      = estado;
+        document.getElementById('eq-criticidade').value = crit;
+    }
+
+    // event delegation — cobre linhas existentes e novas
+    document.getElementById('tabelaEquipamentos').addEventListener('click', function(e) {
+        const botao = e.target.closest('button[title]');
+        if (!botao) return;
+        const linha = botao.closest('tr');
+
+        if (botao.title === 'Consultar Ficha') {
+            abrirDetalhes(linha);
+        } else if (botao.title === 'Editar') {
+            linhaSendoEditada = linha;
+            preencherFormulario(linha);
+            document.getElementById('modalNovoEquipamentoLabel').innerHTML =
+                '<i class="fa-solid fa-microscope me-2"></i>Editar Equipamento';
+            modalNovo.show();
+        } else if (botao.title === 'Remover') {
+            linha.remove();
+        }
     });
 
-    // botão remover - apaga a linha da tabela
-    document.querySelectorAll('[title="Remover"]').forEach(function(botao) {
-        botao.addEventListener('click', function() {
-            this.closest('tr').remove();
-        });
+    window.configurarModalParaNovo = function() {
+        linhaSendoEditada = null;
+        document.getElementById('formNovoEquipamento').reset();
+        document.getElementById('modalNovoEquipamentoLabel').innerHTML =
+            '<i class="fa-solid fa-microscope me-2"></i>Ficha Técnico do Equipamento';
+    };
+
+    document.getElementById('formNovoEquipamento').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const nome      = document.getElementById('eq-nome').value;
+        const categoria = document.getElementById('eq-categoria').value;
+        const marca     = document.getElementById('eq-marca').value;
+        const modelo    = document.getElementById('eq-modelo').value;
+        const serie     = document.getElementById('eq-serie').value;
+        const estado    = document.getElementById('eq-estado').value;
+        const crit      = document.getElementById('eq-criticidade').value;
+
+        const selLoc   = document.getElementById('eq-localizacao');
+        const locTexto = selLoc.options[selLoc.selectedIndex].text;
+
+        const bClasse  = badgeClasse(estado);
+        const critCor  = corCriticidade(crit);
+
+        if (linhaSendoEditada) {
+            linhaSendoEditada.cells[1].querySelector('.fw-bold').innerText = nome;
+            const subEl = linhaSendoEditada.cells[1].querySelector('.text-muted');
+            if (subEl) subEl.innerText = categoria;
+
+            linhaSendoEditada.cells[2].innerText = marca + ' / ' + modelo;
+            linhaSendoEditada.cells[3].innerHTML = '<code class="text-dark">' + serie + '</code>';
+            linhaSendoEditada.cells[4].innerText = locTexto;
+
+            const badge = linhaSendoEditada.cells[5].querySelector('.badge');
+            if (badge) { badge.className = 'badge ' + bClasse + ' mb-1'; badge.innerText = estado; }
+
+            const small = linhaSendoEditada.cells[5].querySelector('small');
+            if (small) {
+                small.className        = critCor + ' fw-bold';
+                small.style.fontSize   = '0.75rem';
+                small.style.whiteSpace = 'nowrap';
+                small.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Criticidade ' + crit;
+            }
+        } else {
+            const tbody  = document.getElementById('tabelaEquipamentos').getElementsByTagName('tbody')[0];
+            const codigo = '#' + String(tbody.rows.length + 1).padStart(3, '0');
+            const novaLinha = tbody.insertRow();
+            novaLinha.innerHTML = `
+                <td class="text-center ps-3 fw-bold">${codigo}</td>
+                <td class="text-center">
+                    <div class="fw-bold text-dark">${nome}</div>
+                    <small class="text-muted">${categoria}</small>
+                </td>
+                <td class="text-center">${marca} / ${modelo}</td>
+                <td class="text-center"><code class="text-dark">${serie}</code></td>
+                <td class="text-center">${locTexto}</td>
+                <td class="text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center">
+                        <span class="badge ${bClasse} mb-1">${estado}</span>
+                        <small class="${critCor} fw-bold" style="font-size: 0.75rem; white-space: nowrap;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Criticidade ${crit}
+                        </small>
+                    </div>
+                </td>
+                <td class="text-center pe-3">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <button class="btn btn-sm btn-outline-secondary me-1" title="Consultar Ficha"><i class="fa-solid fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary me-1" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </td>`;
+        }
+
+        modalNovo.hide();
     });
 }
 
@@ -168,8 +295,13 @@ function initFornecedores() {
         document.getElementById('inputTelefone').value  = telefone;
         document.getElementById('inputEmail').value     = email;
         document.getElementById('inputNif').value       = nif;
-        document.getElementById('inputEspecialidade').value = '';
-        document.getElementById('inputMorada').value   = '';
+        document.getElementById('inputEspecialidade').value     = '';
+        document.getElementById('inputMorada').value           = '';
+        document.getElementById('inputWebsite').value          = '';
+        document.getElementById('inputPessoaContacto').value   = '';
+        document.getElementById('inputTelefoneContacto').value = '';
+        document.getElementById('inputTipoFornecedor').value   = '';
+        document.getElementById('inputObservacoes').value      = '';
 
         document.getElementById('modalNovoFornecedorLabel').innerHTML = '<i class="fa-solid fa-truck-field me-2"></i>Editar Fornecedor';
         modalBootstrap.show();
@@ -308,7 +440,7 @@ function initDocumentacao() {
     let linhaSendoEditada = null;
     const modalBootstrap = new bootstrap.Modal(document.getElementById('modalSubmeterDocumento'));
 
-    // mapeamento do tipo de documento para o badge correspondente
+    
     const mapeamentoBadges = {
         'Manual':    { texto: 'Manual do Utilizador',                 classe: 'bg-primary' },
         'Guia':      { texto: 'Guia de Consulta Rápida',              classe: 'bg-success' },
@@ -325,7 +457,7 @@ function initDocumentacao() {
         document.getElementById('inputEquipamento').value = `${nomeEquipamento} (${refEquipamento.replace('Inventário: ', '')})`;
         document.getElementById('selectTipo').value = tipoValor;
 
-        // ficheiro não é obrigatório ao editar
+        
         document.getElementById('inputFicheiro').required = false;
         document.getElementById('labelFicheiro').innerText = 'Substituir Ficheiro (Opcional)';
 
@@ -348,7 +480,7 @@ function initDocumentacao() {
         const tipoValor        = document.getElementById('selectTipo').value;
         const inputFich        = document.getElementById('inputFicheiro');
 
-        // separo o nome do equipamento do código de inventário
+        
         let nomeEquip = equipamentoValor;
         let refEquip  = 'Inventário: #---';
         if (equipamentoValor.includes('(')) {
@@ -425,7 +557,7 @@ function initGarantias() {
         'Extensao':    { texto: 'Extensão de Garantia', classe: 'bg-info text-dark' }
     };
 
-    // converte data do formato ISO (2024-06-10) para o formato PT (10/06/2024)
+    // converte data do formato 2024-06-10 para o formato 10/06/2024
     function formatarDataBR(dataString) {
         if (!dataString) return '';
         const partes = dataString.split('-');
@@ -548,7 +680,7 @@ function initGarantias() {
 }
 
 
-// ---- gestão do portal público (backoffice das FAQs) ----
+// ---- gestão do portal público ----
 
 function initGestaoPortal() {
     let linhaFAQEditada = null;
@@ -607,7 +739,7 @@ function initGestaoPortal() {
         modalFAQBootstrap.hide();
     };
 
-    // botão "Guardar Todas as Alterações" - mostra o toast de confirmação
+    // botão "Guardar Todas as Alterações" 
     window.salvarTudoGlobal = function() {
         const toastEl = document.getElementById('toastGlobal');
         const toast = new bootstrap.Toast(toastEl);
