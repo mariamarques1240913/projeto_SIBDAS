@@ -196,7 +196,7 @@
     </div>
 
     <div class="modal fade" id="modalNovoEquipamento" tabindex="-1" aria-labelledby="modalNovoEquipamentoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header text-white modal-header-hospital">
                     <h5 class="modal-title fw-bold" id="modalNovoEquipamentoLabel">
@@ -207,21 +207,61 @@
                 <div class="modal-body p-4">
                     <form id="formNovoEquipamento">
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary small">Nome do Equipamento</label>
-                                <input type="text" class="form-control" placeholder="Ex: Ventilador Clínico" required>
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold text-secondary small">Nome / Designação</label>
+                                <input type="text" class="form-control" placeholder="Ex: Ventilador Clínico Avançado" required>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold text-secondary small">Categoria / Tipo</label>
                                 <input type="text" class="form-control" placeholder="Ex: Suporte de Vida" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary small">Marca / Modelo</label>
-                                <input type="text" class="form-control" placeholder="Ex: Dräger / Evita V300" required>
+                                <label class="form-label fw-bold text-secondary small">Marca</label>
+                                <input type="text" class="form-control" placeholder="Ex: Dräger" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Modelo</label>
+                                <input type="text" class="form-control" placeholder="Ex: Evita V300" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Número de Série (SN)</label>
                                 <input type="text" class="form-control" placeholder="Ex: SN-987654" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Fabricante</label>
+                                <input type="text" class="form-control" placeholder="Ex: Dräger Medical GmbH" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary small">Data de Aquisição</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary small">Ano de Fabrico</label>
+                                <input type="number" class="form-control" placeholder="Ex: 2022" min="1900" max="2099">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary small">Custo de Aquisição (€)</label>
+                                <input type="number" class="form-control" placeholder="Ex: 15000" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Tipo de Entrada</label>
+                                <select class="form-select" required>
+                                    <option value="" selected disabled>Selecione...</option>
+                                    <option value="Compra">Compra</option>
+                                    <option value="Doação">Doação</option>
+                                    <option value="Aluguer">Aluguer</option>
+                                    <option value="Empréstimo">Empréstimo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Estado Atual</label>
+                                <select class="form-select" required>
+                                    <option value="" selected disabled>Selecione...</option>
+                                    <option value="Operacional">Operacional</option>
+                                    <option value="Em Manutenção">Em Manutenção</option>
+                                    <option value="Avariado">Avariado</option>
+                                    <option value="Abatido">Abatido</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Localização Hospitalar</label>
@@ -235,10 +275,16 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-secondary small">Criticidade / Risco</label>
                                 <select class="form-select" required>
-                                    <option value="Alta">Alta</option>
+                                    <option value="" selected disabled>Selecione...</option>
+                                    <option value="Baixa">Baixa</option>
                                     <option value="Média">Média</option>
-                                    <option value="Normal">Normal</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Suporte de vida">Suporte de vida</option>
                                 </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-secondary small">Observações</label>
+                                <textarea class="form-control" rows="2" placeholder="Notas adicionais sobre o equipamento..."></textarea>
                             </div>
                         </div>
                     </form>
