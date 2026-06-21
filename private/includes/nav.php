@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/funcoes.php';
+redirect_if_not_logged();
+$nome = $_SESSION['utilizador'];
+?>
 <nav class="navbar navbar-dark sticky-top shadow-sm">
     <div class="container-fluid px-4">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="/projeto_SIBDAS/private/dashboard.php">
@@ -5,7 +10,10 @@
             <?php echo APP_NAME; ?> <span class="fs-6 fw-normal ms-2">| Área Restrita</span>
         </a>
         <div class="d-flex align-items-center">
-            <a href="/projeto_SIBDAS/public/index.php" class="btn btn-sm btn-light fw-bold px-3" style="color: #1d5370;">
+            <span class="text-white me-3 small">
+                <i class="fa-solid fa-user me-1"></i><?php echo htmlspecialchars($nome); ?>
+            </span>
+            <a href="/projeto_SIBDAS/public/logout.php" class="btn btn-sm btn-light fw-bold px-3" style="color: #1d5370;">
                 Sair <i class="fa-solid fa-right-from-bracket ms-1"></i>
             </a>
         </div>
