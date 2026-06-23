@@ -1,0 +1,112 @@
+CREATE TABLE `Utilizador` (
+  `codUtilizador` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  CONSTRAINT `pk_Utilizador` PRIMARY KEY (`codUtilizador`),
+  CONSTRAINT `uq_Utilizador_username` UNIQUE (`username`),
+  CONSTRAINT `uq_Utilizador_email` UNIQUE (`email`)
+);
+
+CREATE TABLE `Categoria` (
+  `codCategoria` int NOT NULL AUTO_INCREMENT,
+  `designacao` varchar(100) NOT NULL,
+  `descricao` text,
+  CONSTRAINT `pk_Categoria` PRIMARY KEY (`codCategoria`)
+);
+
+CREATE TABLE `Localizacao` (
+  `codLocalizacao` int NOT NULL AUTO_INCREMENT,
+  `edificio` varchar(100) NOT NULL,
+  `piso` varchar(50) NOT NULL,
+  `servico` varchar(100) NOT NULL,
+  `sala` varchar(100),
+  CONSTRAINT `pk_Localizacao` PRIMARY KEY (`codLocalizacao`)
+);
+
+CREATE TABLE `Equipamento` (
+  `codInventario` int NOT NULL AUTO_INCREMENT,
+  `codCategoria` int NOT NULL,
+  `codLocalizacao` int NOT NULL,
+  `designacao` varchar(150) NOT NULL,
+  `marca` varchar(100) NOT NULL,
+  `modelo` varchar(100) NOT NULL,
+  `nrSerie` varchar(100) NOT NULL,
+  `fabricante` varchar(100) NOT NULL,
+  `dataAquisicao` date,
+  `anoFabrico` int,
+  `custoAquisicao` decimal(10,2),
+  `tipoEntrada` varchar(20) NOT NULL,
+  `estado` varchar(30) NOT NULL,
+  `criticidade` varchar(20) NOT NULL,
+  `observacoes` text,
+  CONSTRAINT `pk_Equipamento` PRIMARY KEY (`codInventario`),
+  CONSTRAINT `uq_Equipamento_serie` UNIQUE (`nrSerie`, `fabricante`, `modelo`),
+  CONSTRAINT `ck_Equipamento_tipoEntrada` CHECK (`tipoEntrada` IN ('compra', 'doacao', 'aluguer', 'emprestimo')),
+  CONSTRAINT `ck_Equipamento_estado` CHECK (`estado` IN ('Ativo', 'Em manutencao', 'Inativo', 'Em calibracao', 'Em quarentena', 'Abatido')),
+  CONSTRAINT `ck_Equipamento_criticidade` CHECK (`criticidade` IN ('Baixa', 'Media', 'Alta', 'Suporte de vida'))
+);
+
+CREATE TABLE `Fornecedor` (
+  `codFornecedor` int NOT NULL AUTO_INCREMENT,
+  `nomeEmpresa` varchar(150) NOT NULL,
+  `NIF` varchar(20) NOT NULL,
+  `contactoTelefonico` varchar(20),
+  `email` varchar(100),
+  `morada` varchar(200),
+  `website` varchar(150),
+  `pessoaContacto` varchar(100),
+  `telefonePessoaContacto` varchar(20),
+  `tipoFornecedor` varchar(50) NOT NULL,
+  `observacoes` text,
+  CONSTRAINT `pk_Fornecedor` PRIMARY KEY (`codFornecedor`),
+  CONSTRAINT `uq_Fornecedor_NIF` UNIQUE (`NIF`),
+  CONSTRAINT `ck_Fornecedor_tipoFornecedor` CHECK (`tipoFornecedor` IN ('fabricante', 'distribuidor', 'assistencia tecnica', 'consumiveis'))
+);
+
+CREATE TABLE `EquipamentoFornecedor` (
+  `codInventario` int NOT NULL,
+  `codFornecedor` int NOT NULL,
+  CONSTRAINT `pk_EquipamentoFornecedor` PRIMARY KEY (`codInventario`, `codFornecedor`)
+);
+
+CREATE TABLE `Documento` (
+  `codDocumento` int NOT NULL AUTO_INCREMENT,
+  `codInventario` int NOT NULL,
+  `codFornecedor` int,
+  `tipoDocumento` varchar(50) NOT NULL,
+  `nomeDocumento` varchar(150) NOT NULL,
+  `dataDocumento` date,
+  `dataValidade` date,
+  `localizacaoFicheiro` varchar(255),
+  CONSTRAINT `pk_Documento` PRIMARY KEY (`codDocumento`),
+  CONSTRAINT `ck_Documento_tipoDocumento` CHECK (`tipoDocumento` IN ('manual utilizador', 'manual servico', 'certificado calibracao', 'contrato manutencao', 'fatura', 'declaracao conformidade', 'relatorio tecnico'))
+);
+
+CREATE TABLE `Garantia` (
+  `codGarantia` int NOT NULL AUTO_INCREMENT,
+  `codInventario` int NOT NULL,
+  `dataInicio` date NOT NULL,
+  `dataFim` date NOT NULL,
+  `temContrato` boolean NOT NULL,
+  `tipoContrato` varchar(50),
+  `entidadeResponsavel` varchar(150),
+  `periodicidade` varchar(50),
+  `observacoes` text,
+  CONSTRAINT `pk_Garantia` PRIMARY KEY (`codGarantia`)
+);
+
+ALTER TABLE `Equipamento` ADD CONSTRAINT `fk_Equipamento_Categoria` FOREIGN KEY (`codCategoria`) REFERENCES `Categoria` (`codCategoria`);
+
+ALTER TABLE `Equipamento` ADD CONSTRAINT `fk_Equipamento_Localizacao` FOREIGN KEY (`codLocalizacao`) REFERENCES `Localizacao` (`codLocalizacao`);
+
+ALTER TABLE `EquipamentoFornecedor` ADD CONSTRAINT `fk_EqForn_Equipamento` FOREIGN KEY (`codInventario`) REFERENCES `Equipamento` (`codInventario`);
+
+ALTER TABLE `EquipamentoFornecedor` ADD CONSTRAINT `fk_EqForn_Fornecedor` FOREIGN KEY (`codFornecedor`) REFERENCES `Fornecedor` (`codFornecedor`);
+
+ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Equipamento` FOREIGN KEY (`codInventario`) REFERENCES `Equipamento` (`codInventario`);
+
+ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Fornecedor` FOREIGN KEY (`codFornecedor`) REFERENCES `Fornecedor` (`codFornecedor`);
+
+ALTER TABLE `Garantia` ADD CONSTRAINT `fk_Garantia_Equipamento` FOREIGN KEY (`codInventario`) REFERENCES `Equipamento` (`codInventario`);
