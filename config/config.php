@@ -1,5 +1,13 @@
 <?php
-// Configurações globais da aplicação
 define('APP_NAME', 'Hospitally');
 define('APP_VERSION', '1.0.0');
 define('APP_COPYRIGHT', '© 2026 Hospitally');
+
+define('BASE_URL', '/projeto_SIBDAS');
+
+define('MYSQL_HOST',     'vsgate-s1.dei.isep.ipp.pt');
+define('MYSQL_PORT',     '10464');
+define('MYSQL_DATABASE', 'db1240913');
+define('MYSQL_USERNAME', '1240913');
+define('MYSQL_PASSWORD', 'marques_913');
+define('MYSQL_AES_KEY',  'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');

@@ -289,6 +289,48 @@ p, .conteudo-principal p, .conteudo-quemsomos p, .conteudo-quemsomos .texto-miss
     margin: 0;
 }
 
+/* Cabeçalho dos modais do backoffice */
+.modal-header-hospital {
+    background-color: #1d5370;
+}
+
+/* DataTables — info e paginação */
+.dataTables_info {
+    color: #6c757d !important;
+    font-size: 0.85rem !important;
+    padding-top: 0.75rem !important;
+}
+
+.dataTables_paginate .paginate_button {
+    font-size: 0.85rem !important;
+}
+
+.dataTables_paginate .paginate_button.current,
+.dataTables_paginate .paginate_button.current:hover {
+    background: #1d5370 !important;
+    border-color: #1d5370 !important;
+    color: white !important;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background: #eef4f7 !important;
+    border-color: #1d5370 !important;
+    color: #1d5370 !important;
+}
+
+.dataTables_length label,
+.dataTables_filter label {
+    font-size: 0.85rem !important;
+    color: #6c757d !important;
+}
+
+.dataTables_wrapper .row:last-child {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 0.5rem 0;
+    border-radius: 0 0 0.375rem 0.375rem;
+}
+
 /* FORMULÁRIO DE CONTACTO */
 #contacto {
     padding: 40px;

@@ -1,4 +1,4 @@
-CREATE TABLE `Utilizador` (
+CREATE TABLE IF NOT EXISTS `Utilizador` (
   `codUtilizador` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `nome` varchar(100) NOT NULL,
@@ -9,14 +9,14 @@ CREATE TABLE `Utilizador` (
   CONSTRAINT `uq_Utilizador_email` UNIQUE (`email`)
 );
 
-CREATE TABLE `Categoria` (
+CREATE TABLE IF NOT EXISTS `Categoria` (
   `codCategoria` int NOT NULL AUTO_INCREMENT,
   `designacao` varchar(100) NOT NULL,
   `descricao` text,
   CONSTRAINT `pk_Categoria` PRIMARY KEY (`codCategoria`)
 );
 
-CREATE TABLE `Localizacao` (
+CREATE TABLE IF NOT EXISTS `Localizacao` (
   `codLocalizacao` int NOT NULL AUTO_INCREMENT,
   `edificio` varchar(100) NOT NULL,
   `piso` varchar(50) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE `Localizacao` (
   CONSTRAINT `pk_Localizacao` PRIMARY KEY (`codLocalizacao`)
 );
 
-CREATE TABLE `Equipamento` (
+CREATE TABLE IF NOT EXISTS `Equipamento` (
   `codInventario` int NOT NULL AUTO_INCREMENT,
   `codCategoria` int NOT NULL,
   `codLocalizacao` int NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `Equipamento` (
   CONSTRAINT `ck_Equipamento_criticidade` CHECK (`criticidade` IN ('Baixa', 'Media', 'Alta', 'Suporte de vida'))
 );
 
-CREATE TABLE `Fornecedor` (
+CREATE TABLE IF NOT EXISTS `Fornecedor` (
   `codFornecedor` int NOT NULL AUTO_INCREMENT,
   `nomeEmpresa` varchar(150) NOT NULL,
   `NIF` varchar(20) NOT NULL,
@@ -65,13 +65,13 @@ CREATE TABLE `Fornecedor` (
   CONSTRAINT `ck_Fornecedor_tipoFornecedor` CHECK (`tipoFornecedor` IN ('fabricante', 'distribuidor', 'assistencia tecnica', 'consumiveis'))
 );
 
-CREATE TABLE `EquipamentoFornecedor` (
+CREATE TABLE IF NOT EXISTS `EquipamentoFornecedor` (
   `codInventario` int NOT NULL,
   `codFornecedor` int NOT NULL,
   CONSTRAINT `pk_EquipamentoFornecedor` PRIMARY KEY (`codInventario`, `codFornecedor`)
 );
 
-CREATE TABLE `Documento` (
+CREATE TABLE IF NOT EXISTS `Documento` (
   `codDocumento` int NOT NULL AUTO_INCREMENT,
   `codInventario` int NOT NULL,
   `codFornecedor` int,
@@ -84,7 +84,7 @@ CREATE TABLE `Documento` (
   CONSTRAINT `ck_Documento_tipoDocumento` CHECK (`tipoDocumento` IN ('manual utilizador', 'manual servico', 'certificado calibracao', 'contrato manutencao', 'fatura', 'declaracao conformidade', 'relatorio tecnico'))
 );
 
-CREATE TABLE `Garantia` (
+CREATE TABLE IF NOT EXISTS `Garantia` (
   `codGarantia` int NOT NULL AUTO_INCREMENT,
   `codInventario` int NOT NULL,
   `dataInicio` date NOT NULL,
