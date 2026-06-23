@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Serve a raiz a partir de public/index.php
+RewriteRule ^$ public/index.php [L,QSA]
+
+# Para qualquer .php que não exista na raiz, reencaminha para public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+\.php)$ public/$1 [L,QSA]

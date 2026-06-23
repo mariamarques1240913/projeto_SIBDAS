@@ -21,7 +21,7 @@ if (isset($_SESSION['server_error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo APP_NAME; ?> - Login</title>
-    <link rel="icon" type="image/png" href="/projeto_SIBDAS/assets/img/coracao.png">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/img/coracao.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -34,7 +34,7 @@ if (isset($_SESSION['server_error'])) {
                 <p class="text-muted small">Sistema de Gestão de Cuidados Hospitalares</p>
             </div>
 
-            <form method="post" action="../private/processa_login.php" name="formulario">
+            <form method="post" action="<?= BASE_URL ?>/private/processa_login.php" name="formulario">
                 <div class="mb-3 text-start">
                     <label for="text_username" class="form-label fw-semibold text-secondary">Email</label>
                     <input type="email" class="form-control" id="text_username" name="text_username" placeholder="Insira o seu email" required>
@@ -79,6 +79,6 @@ if (isset($_SESSION['server_error'])) {
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/projeto_SIBDAS/assets/js/1240913.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/1240913.js"></script>
 </body>
 </html>
