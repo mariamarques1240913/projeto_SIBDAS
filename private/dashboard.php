@@ -1,5 +1,71 @@
-<?php include 'includes/header.php'; ?>
-<?php include 'includes/nav.php'; ?>
+<?php
+require_once __DIR__ . '/includes/funcoes.php';
+redirect_if_not_logged();
+
+$dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
+
+try {
+    $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
+    $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // KPIs: contagens simples
+    $totalEquipamentos = $ligacao->query("SELECT COUNT(*) FROM Equipamento")->fetchColumn();
+    $emManutencao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado = 'Em manutencao'")->fetchColumn();
+    $garantiasAlerta   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
+    $totalDocumentos   = $ligacao->query("SELECT COUNT(*) FROM Documento")->fetchColumn();
+
+    // Gráfico donut: contagem por estado
+    $dadosEstado = $ligacao->query("SELECT estado, COUNT(*) AS total FROM Equipamento GROUP BY estado ORDER BY total DESC")->fetchAll(PDO::FETCH_OBJ);
+
+    // Gráfico barras: contagem por serviço (top 6)
+    $dadosServico = $ligacao->query("
+        SELECT l.servico, COUNT(*) AS total
+        FROM Equipamento e
+        LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
+        WHERE l.servico IS NOT NULL
+        GROUP BY l.servico
+        ORDER BY total DESC
+        LIMIT 6
+    ")->fetchAll(PDO::FETCH_OBJ);
+
+    // Tabela de alertas: equipamentos fora de serviço + garantias a expirar em 30 dias
+    $alertas = $ligacao->query("
+        SELECT e.designacao, e.estado AS ocorrencia, l.servico, e.criticidade, 'estado' AS tipoAlerta
+        FROM Equipamento e
+        LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
+        WHERE e.estado != 'Ativo'
+        UNION ALL
+        SELECT e.designacao,
+               CONCAT('Garantia expira em ', DATEDIFF(g.dataFim, CURDATE()), ' dia(s)') AS ocorrencia,
+               l.servico, e.criticidade, 'garantia' AS tipoAlerta
+        FROM Garantia g
+        LEFT JOIN Equipamento e ON g.codInventario = e.codInventario
+        LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
+        WHERE g.dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+        LIMIT 10
+    ")->fetchAll(PDO::FETCH_OBJ);
+
+    $erro = '';
+} catch (PDOException $e) {
+    $erro = "Erro ao ligar à base de dados.";
+    $totalEquipamentos = 0; $emManutencao = 0; $garantiasAlerta = 0; $totalDocumentos = 0;
+    $dadosEstado = []; $dadosServico = []; $alertas = [];
+}
+$ligacao = null;
+
+// Preparar dados para os gráficos em formato JSON (para passar ao JavaScript)
+$chartEstadoLabels = array_map(fn($r) => $r->estado, $dadosEstado);
+$chartEstadoData   = array_map(fn($r) => (int)$r->total, $dadosEstado);
+
+$coresEstado = ['Ativo' => '#b2dfdb', 'Em manutencao' => '#ffb3ba', 'Em calibracao' => '#a2c2cf', 'Em quarentena' => '#ffc6ff', 'Abatido' => '#b0bec5', 'Inativo' => '#d3d3d3'];
+$chartEstadoCores = array_map(fn($r) => $coresEstado[$r->estado] ?? '#e0e0e0', $dadosEstado);
+
+$chartServicoLabels = array_map(fn($r) => $r->servico ?? 'Sem localização', $dadosServico);
+$chartServicoData   = array_map(fn($r) => (int)$r->total, $dadosServico);
+
+include 'includes/header.php';
+include 'includes/nav.php';
+?>
 
 <div class="container-fluid">
     <div class="row">
@@ -9,13 +75,18 @@
             <h1 class="h3 fw-bold" style="color: #1d5370;">Painel de Controlo</h1>
             <p class="text-muted">Área de Gestão do Inventário Hospitalar.</p>
 
+            <?php if (!empty($erro)) : ?>
+                <div class="alert alert-warning"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
+
+            <!-- KPIs com dados reais da BD -->
             <div class="row g-3 mt-2 mb-4">
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #a2c2cf !important;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Equipamentos</h6>
-                                <span class="h3 fw-bold text-dark">142</span>
+                                <span class="h3 fw-bold text-dark"><?= $totalEquipamentos ?></span>
                             </div>
                             <div class="fs-2 opacity-75" style="color: #a2c2cf;">
                                 <i class="fa-solid fa-microscope"></i>
@@ -29,7 +100,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Em Manutenção</h6>
-                                <span class="h3 fw-bold text-dark">5</span>
+                                <span class="h3 fw-bold text-dark"><?= $emManutencao ?></span>
                             </div>
                             <div class="fs-2 opacity-75" style="color: #ffb3ba;">
                                 <i class="fa-solid fa-screwdriver-wrench"></i>
@@ -43,7 +114,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Garantias Alerta</h6>
-                                <span class="h3 fw-bold text-dark">2</span>
+                                <span class="h3 fw-bold text-dark"><?= $garantiasAlerta ?></span>
                             </div>
                             <div class="fs-2 opacity-75" style="color: #b39ddb;">
                                 <i class="fa-solid fa-file-circle-exclamation"></i>
@@ -56,8 +127,8 @@
                     <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #b2dfdb !important;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Manuais PDF</h6>
-                                <span class="h3 fw-bold text-dark">28</span>
+                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Documentos</h6>
+                                <span class="h3 fw-bold text-dark"><?= $totalDocumentos ?></span>
                             </div>
                             <div class="fs-2 opacity-75" style="color: #b2dfdb;">
                                 <i class="fa-solid fa-file-medical"></i>
@@ -67,13 +138,14 @@
                 </div>
             </div>
 
+            <!-- Gráficos -->
             <div class="row g-4 mt-2">
                 <div class="col-12 col-lg-6">
                     <div class="card border-0 shadow-sm rounded p-4 bg-white">
                         <h5 class="fw-bold mb-3" style="color: #1d5370;">
                             <i class="fa-solid fa-circle-half-stroke me-2" style="color: #a2c2cf;"></i>Estado do Inventário
                         </h5>
-                        <p class="text-muted small">Percentagem de equipamentos disponíveis versus imobilizados.</p>
+                        <p class="text-muted small">Distribuição de equipamentos por estado atual.</p>
                         <div style="max-height: 260px; position: relative;">
                             <canvas id="graficoEstado"></canvas>
                         </div>
@@ -93,52 +165,56 @@
                 </div>
             </div>
 
+            <!-- Tabela de alertas com dados reais -->
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm rounded p-4 bg-white">
                         <h5 class="fw-bold mb-3" style="color: #1d5370;">
                             <i class="fa-solid fa-bell me-2" style="color: #ffb3ba;"></i>Alertas Críticos e Manutenções Urgentes
                         </h5>
-                        <p class="text-muted small">Intervenções técnicas e prazos de garantia que requerem atenção imediata.</p>
+                        <p class="text-muted small">Equipamentos fora de serviço e garantias a expirar nos próximos 30 dias.</p>
                         <div class="table-responsive">
+                            <?php if (empty($alertas)) : ?>
+                                <p class="text-success text-center py-3">
+                                    <i class="fa-solid fa-circle-check me-2"></i>Sem alertas ativos. Tudo em ordem!
+                                </p>
+                            <?php else : ?>
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="text-center">ID</th>
                                         <th class="text-center">Equipamento</th>
                                         <th class="text-center">Serviço</th>
-                                        <th class="text-center">Tipo de Ocorrência</th>
-                                        <th class="text-center">Data Limite</th>
+                                        <th class="text-center">Ocorrência</th>
                                         <th class="text-center">Criticidade</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php foreach ($alertas as $alerta) :
+                                        $critCor = match($alerta->criticidade ?? '') {
+                                            'Alta', 'Suporte de vida' => 'danger',
+                                            'Media'                   => 'warning',
+                                            default                   => 'secondary'
+                                        };
+                                        $alertaCor = $alerta->tipoAlerta === 'garantia' ? 'warning' : 'danger';
+                                    ?>
                                     <tr>
-                                        <td class="fw-bold text-center">#EQ-0412</td>
-                                        <td class="text-center">Ventilador Pulmonar Oxylog</td>
-                                        <td class="text-center">UCI</td>
-                                        <td class="text-center">Calibração Preventiva</td>
-                                        <td class="text-center">18/06/2026</td>
-                                        <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #ffb3ba; color: #721c24;">Alta</span></td>
+                                        <td class="fw-bold text-center"><?= htmlspecialchars($alerta->designacao ?? '-') ?></td>
+                                        <td class="text-center text-muted"><?= htmlspecialchars($alerta->servico ?? '-') ?></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-<?= $alertaCor ?>">
+                                                <?= htmlspecialchars($alerta->ocorrencia) ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-<?= $critCor ?>">
+                                                <?= htmlspecialchars($alerta->criticidade ?? '-') ?>
+                                            </span>
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <td class="fw-bold text-center">#EQ-0922</td>
-                                        <td class="text-center">Monitor Sinais Vitais</td>
-                                        <td class="text-center">Urgências</td>
-                                        <td class="text-center">Fim de Garantia</td>
-                                        <td class="text-center">22/06/2026</td>
-                                        <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #ffc6ff; color: #4a154b;">Média</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-bold text-center">#EQ-0115</td>
-                                        <td class="text-center">Desfibrilhador Lifepak</td>
-                                        <td class="text-center">Bloco Operatório</td>
-                                        <td class="text-center">Substituição de Bateria</td>
-                                        <td class="text-center">30/06/2026</td>
-                                        <td class="text-center"><span class="badge rounded-pill px-3 py-2" style="background-color: #b2dfdb; color: #0e433e;">Normal</span></td>
-                                    </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -152,3 +228,68 @@
 </div>
 
 <?php include 'includes/footer.php'; ?>
+
+<!-- Inicialização dos gráficos com dados reais da BD.
+     Este script corre depois do 1240913.js e sobrepõe a função initDashboard(). -->
+<script>
+function initDashboard() {
+    // Dados vindos do PHP via json_encode()
+    var estadoLabels = <?= json_encode($chartEstadoLabels) ?>;
+    var estadoData   = <?= json_encode($chartEstadoData) ?>;
+    var estadoCores  = <?= json_encode($chartEstadoCores) ?>;
+
+    var servicoLabels = <?= json_encode($chartServicoLabels) ?>;
+    var servicoData   = <?= json_encode($chartServicoData) ?>;
+
+    // Gráfico donut — estado do inventário
+    var ctxEstado = document.getElementById('graficoEstado').getContext('2d');
+    new Chart(ctxEstado, {
+        type: 'doughnut',
+        data: {
+            labels: estadoLabels,
+            datasets: [{
+                data: estadoData,
+                backgroundColor: estadoCores,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 15, font: { family: 'Segoe UI', size: 12 } }
+                }
+            }
+        }
+    });
+
+    // Gráfico barras — equipamentos por serviço
+    var ctxServicos = document.getElementById('graficoServicos').getContext('2d');
+    new Chart(ctxServicos, {
+        type: 'bar',
+        data: {
+            labels: servicoLabels,
+            datasets: [{
+                label: 'Equipamentos',
+                data: servicoData,
+                backgroundColor: ['#a2c2cf', '#ffb3ba', '#b39ddb', '#b2dfdb', '#ffc6ff', '#ffe0b2'],
+                borderRadius: 5,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { family: 'Segoe UI' } } },
+                y: { grid: { display: false }, ticks: { font: { family: 'Segoe UI' } } }
+            }
+        }
+    });
+}
+</script>
