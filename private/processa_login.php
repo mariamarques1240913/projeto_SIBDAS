@@ -26,19 +26,30 @@ if (!empty($validation_errors)) {
     exit;
 }
 
-// Simulação de verificação de credenciais (substituir por consulta BD futuramente)
-$result['status'] = 0;
-if ($username === 'admin@hospitally.pt' && $password === 'admin123') {
-    $result['status'] = 1;
-    $result['utilizador'] = 'Administrador';
-}
+// Verificação de credenciais via base de dados (Ficha 14 - Secção 3)
+try {
+    $dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
+    $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
+    $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($result['status'] === 1) {
-    $_SESSION['utilizador'] = $result['utilizador'];
+    $stmt = $ligacao->prepare("SELECT * FROM Utilizador WHERE email = :email");
+    $stmt->bindParam(':email', $username);
+    $stmt->execute();
+    $utilizador = $stmt->fetch(PDO::FETCH_OBJ);
+    $ligacao = null;
+
+    if (!$utilizador || !password_verify($password, $utilizador->password)) {
+        $_SESSION['server_error'] = 'Email ou password incorretos.';
+        header('Location: /projeto_SIBDAS/public/login.php');
+        exit;
+    }
+
+    $_SESSION['utilizador'] = $utilizador->nome;
     header('Location: /projeto_SIBDAS/private/dashboard.php');
     exit;
-} else {
-    $_SESSION['server_error'] = 'Email ou password incorretos.';
+} catch (PDOException $e) {
+    $ligacao = null;
+    $_SESSION['server_error'] = 'Erro ao ligar à base de dados.';
     header('Location: /projeto_SIBDAS/public/login.php');
     exit;
 }

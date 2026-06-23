@@ -34,7 +34,7 @@ if (isset($_SESSION['server_error'])) {
                 <p class="text-muted small">Sistema de Gestão de Cuidados Hospitalares</p>
             </div>
 
-            <form method="post" action="../private/processa_login.php">
+            <form method="post" action="../private/processa_login.php" name="formulario">
                 <div class="mb-3 text-start">
                     <label for="text_username" class="form-label fw-semibold text-secondary">Email</label>
                     <input type="email" class="form-control" id="text_username" name="text_username" placeholder="Insira o seu email" required>
@@ -65,6 +65,14 @@ if (isset($_SESSION['server_error'])) {
                     </button>
                 </div>
             </form>
+
+            <div class="mt-3 pt-3 border-top text-center">
+                <p class="text-muted small mb-2">Teste rápido de acesso:</p>
+                <button type="button" class="btn btn-sm btn-outline-secondary w-100"
+                        onclick="document.getElementById('text_username').value='admin@hospitally.pt';document.getElementById('text_password').value='admin123';">
+                    <i class="fa-solid fa-user-shield me-1"></i> Preencher como Administrador
+                </button>
+            </div>
 
         </div>
     </div>

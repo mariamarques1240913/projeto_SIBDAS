@@ -11,3 +11,7 @@ define('MYSQL_DATABASE', 'db1240913');
 define('MYSQL_USERNAME', '1240913');
 define('MYSQL_PASSWORD', 'marques_913');
 define('MYSQL_AES_KEY',  'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');
+
+define('OPENSSL_METHOD', 'AES-256-CBC');
+define('OPENSSL_KEY',    'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');
+define('OPENSSL_IV',     'Hospitally2026!X');
