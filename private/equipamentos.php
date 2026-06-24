@@ -2,6 +2,13 @@
 require_once __DIR__ . '/includes/funcoes.php';
 redirect_if_not_logged();
 
+$soLeitura = (perfil_atual() === 'profissional de saude');
+if ($soLeitura && ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['editar']) || isset($_GET['remover']))) {
+    $_SESSION['server_error'] = 'Não tem permissão para realizar esta ação.';
+    header('Location: equipamentos.php');
+    exit;
+}
+
 $erros = [];
 $erro_sistema = "";
 $abrirModal = false;
@@ -407,12 +414,14 @@ include 'includes/nav.php';
                 </div>
             <?php endif; ?>
 
+            <?php if (!$soLeitura): ?>
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;"
                         data-bs-toggle="modal" data-bs-target="#modalNovoEquipamento">
                     <i class="fa-solid fa-plus me-2"></i>Novo Equipamento
                 </button>
             </div>
+            <?php endif; ?>
 
             <!-- Filtros de pesquisa -->
             <div class="card border shadow-sm rounded bg-white mb-3">
@@ -526,6 +535,7 @@ include 'includes/nav.php';
                                            class="btn btn-sm btn-outline-secondary me-1" title="Consultar Ficha">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
+                                        <?php if (!$soLeitura): ?>
                                         <a href="equipamentos.php?editar=<?= aes_encrypt($eq->codInventario) ?>"
                                            class="btn btn-sm btn-outline-secondary me-1" title="Editar">
                                             <i class="fa-solid fa-pen-to-square"></i>
@@ -534,6 +544,7 @@ include 'includes/nav.php';
                                            class="btn btn-sm btn-outline-danger" title="Remover">
                                             <i class="fa-solid fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -627,12 +638,14 @@ include 'includes/nav.php';
                                    placeholder="Ex: 2022" min="1900" max="2099"
                                    value="<?= htmlspecialchars($v('anoFabrico')) ?>">
                         </div>
+                        <?php if (!$soLeitura): ?>
                         <div class="col-md-4">
                             <label class="form-label fw-bold text-secondary small">Custo de Aquisição (€)</label>
                             <input type="number" class="form-control" name="custoAquisicao"
                                    placeholder="Ex: 15000" min="0" step="0.01"
                                    value="<?= htmlspecialchars($v('custoAquisicao')) ?>">
                         </div>
+                        <?php endif; ?>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-secondary small">Tipo de Entrada</label>
                             <select class="form-select" name="tipoEntrada" required>
@@ -807,10 +820,12 @@ include 'includes/nav.php';
                                 <label class="small text-muted d-block">Tipo de Entrada</label>
                                 <span><?= ucfirst(htmlspecialchars($equipamentoVer->tipoEntrada)) ?></span>
                             </div>
+                            <?php if (!$soLeitura): ?>
                             <div class="col-md-4">
                                 <label class="small text-muted d-block">Custo de Aquisição</label>
                                 <span><?= $equipamentoVer->custoAquisicao ? '€ ' . number_format((float)$equipamentoVer->custoAquisicao, 2, ',', '.') : '-' ?></span>
                             </div>
+                            <?php endif; ?>
                             <div class="col-md-4">
                                 <label class="small text-muted d-block">Data de Aquisição</label>
                                 <span><?= $equipamentoVer->dataAquisicao ? date('d/m/Y', strtotime($equipamentoVer->dataAquisicao)) : '-' ?></span>

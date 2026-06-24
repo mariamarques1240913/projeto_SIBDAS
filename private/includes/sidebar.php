@@ -6,6 +6,7 @@ try {
     $naoLidasSidebar = (int)$ligSidebar->query("SELECT COUNT(*) FROM MensagemContacto WHERE lida = 0")->fetchColumn();
     $ligSidebar = null;
 } catch (PDOException $e) { $naoLidasSidebar = 0; }
+$_perfilSidebar = perfil_atual();
 ?>
 <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar p-3 border-end" style="min-height: calc(100vh - 56px);">
     <div class="position-sticky pt-3">
@@ -23,6 +24,7 @@ try {
                     <span>Equipamentos Médicos</span>
                 </a>
             </li>
+            <?php if ($_perfilSidebar !== 'profissional de saude'): ?>
             <li class="nav-item mb-2">
                 <a class="nav-link py-2 px-3 text-muted" href="<?= BASE_URL ?>/private/localizacoes.php">
                     <i class="fa-solid fa-map-location-dot me-2" style="color: #7097a8;"></i>
@@ -35,6 +37,7 @@ try {
                     <span>Fornecedores</span>
                 </a>
             </li>
+            <?php endif; ?>
             <li class="nav-item mb-2">
                 <a class="nav-link py-2 px-3 text-muted" href="<?= BASE_URL ?>/private/documentacao.php">
                     <i class="fa-solid fa-file-medical me-2" style="color: #7097a8;"></i>
@@ -47,12 +50,14 @@ try {
                     <span>Garantias e Contratos</span>
                 </a>
             </li>
+            <?php if ($_perfilSidebar === 'administrador'): ?>
             <li class="nav-item mb-2">
                 <a class="nav-link py-2 px-3 text-muted" href="<?= BASE_URL ?>/private/gestao_portal.php">
                     <i class="fa-solid fa-sliders me-2" style="color: #7097a8;"></i>
                     <span>Gestão do Portal Público</span>
                 </a>
             </li>
+            <?php endif; ?>
             <li class="nav-item mb-2">
                 <a class="nav-link py-2 px-3 text-muted d-flex align-items-center justify-content-between" href="<?= BASE_URL ?>/private/mensagens.php">
                     <span>

@@ -2,6 +2,13 @@
 require_once __DIR__ . '/includes/funcoes.php';
 redirect_if_not_logged();
 
+$soLeitura = (perfil_atual() === 'profissional de saude');
+if ($soLeitura && ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['editar']) || isset($_GET['remover']))) {
+    $_SESSION['server_error'] = 'Não tem permissão para realizar esta ação.';
+    header('Location: garantias.php');
+    exit;
+}
+
 $erros = [];
 $erro_sistema = "";
 $abrirModal = false;
@@ -252,12 +259,14 @@ include 'includes/nav.php';
                 <div class="alert alert-danger"><strong>Erro:</strong> <?= htmlspecialchars($erro_sistema) ?></div>
             <?php endif; ?>
 
+            <?php if (!$soLeitura): ?>
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #1d5370;"
                         data-bs-toggle="modal" data-bs-target="#modalGarantia">
                     <i class="fa-solid fa-plus me-2"></i>Registar Cobertura
                 </button>
             </div>
+            <?php endif; ?>
 
             <div class="table-responsive bg-white rounded shadow-sm border">
                 <?php if (!empty($erro)) : ?>
@@ -323,6 +332,7 @@ include 'includes/nav.php';
                                            class="btn btn-sm btn-outline-secondary me-1" title="Consultar">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
+                                        <?php if (!$soLeitura): ?>
                                         <a href="garantias.php?editar=<?= aes_encrypt($gar->codGarantia) ?>"
                                            class="btn btn-sm btn-outline-secondary me-1" title="Editar">
                                             <i class="fa-solid fa-pen-to-square"></i>
@@ -331,6 +341,7 @@ include 'includes/nav.php';
                                            class="btn btn-sm btn-outline-danger" title="Remover">
                                             <i class="fa-solid fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

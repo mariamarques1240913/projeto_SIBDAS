@@ -3,7 +3,7 @@ define('APP_NAME', 'Hospitally');
 define('APP_VERSION', '1.0.0');
 define('APP_COPYRIGHT', '© 2026 Hospitally');
 
-define('BASE_URL', '/projeto_SIBDAS');
+define('BASE_URL', '/sibdas/1240913/hospitally');
 
 define('MYSQL_HOST',     'vsgate-s1.dei.isep.ipp.pt');
 define('MYSQL_PORT',     '10464');

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/funcoes.php';
 redirect_if_not_logged();
+verificar_perfil(['administrador']);
 
 $dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
 $erro_sistema = '';

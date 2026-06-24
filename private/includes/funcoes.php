@@ -31,6 +31,21 @@ function logout_and_redirect($redirect_to = '/public/login.php')
     exit;
 }
 
+function perfil_atual()
+{
+    start_session();
+    return $_SESSION['perfil'] ?? '';
+}
+
+function verificar_perfil(array $permitidos)
+{
+    if (!in_array(perfil_atual(), $permitidos)) {
+        $_SESSION['server_error'] = 'Não tem permissão para aceder a esta funcionalidade.';
+        header('Location: ' . BASE_URL . '/private/dashboard.php');
+        exit;
+    }
+}
+
 function aes_encrypt($value)
 {
     $encrypted = openssl_encrypt($value, OPENSSL_METHOD, OPENSSL_KEY, OPENSSL_RAW_DATA, OPENSSL_IV);

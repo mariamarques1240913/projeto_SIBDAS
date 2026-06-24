@@ -1,6 +1,8 @@
-INSERT INTO `Utilizador` (`username`, `nome`, `email`, `password`)
-VALUES ('admin', 'Administrador', 'admin@hospitally.pt', '$2y$10$HUJDFjFub2uZV0iEGMKpI.fzo4lKds32K0HBTBzodGU2zn8MZOVXW')
-ON DUPLICATE KEY UPDATE `password` = VALUES(`password`);
+INSERT INTO `Utilizador` (`username`, `nome`, `email`, `password`, `perfil`) VALUES
+('admin',    'Administrador do Sistema',   'admin@hospitally.pt',    '$2y$10$HUJDFjFub2uZV0iEGMKpI.fzo4lKds32K0HBTBzodGU2zn8MZOVXW', 'administrador'),
+('tecnico1', 'João Silva',                 'tecnico@hospitally.pt',  '$2y$10$HUJDFjFub2uZV0iEGMKpI.fzo4lKds32K0HBTBzodGU2zn8MZOVXW', 'tecnico'),
+('profissional1', 'Ana Costa',            'profissional@hospitally.pt', '$2y$10$HUJDFjFub2uZV0iEGMKpI.fzo4lKds32K0HBTBzodGU2zn8MZOVXW', 'profissional de saude')
+ON DUPLICATE KEY UPDATE `perfil` = VALUES(`perfil`), `nome` = VALUES(`nome`);
 
 INSERT INTO `ConteudoPortal` (`chave`, `valor`) VALUES
 ('quem_somos', 'O Hospitally é uma unidade hospitalar de referência, dedicada a oferecer as melhores soluções de saúde e bem-estar à comunidade, com base em elevados padrões de exigência técnica e humana.'),

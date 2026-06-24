@@ -46,6 +46,7 @@ try {
 
     $_SESSION['utilizador']     = $utilizador->nome;
     $_SESSION['codUtilizador']  = $utilizador->codUtilizador;
+    $_SESSION['perfil']         = $utilizador->perfil;
     header('Location: ' . BASE_URL . '/private/dashboard.php');
     exit;
 } catch (PDOException $e) {
