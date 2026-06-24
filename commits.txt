@@ -1,0 +1,86 @@
+﻿5fc467b - Maria Marques - 2026-06-24 17:23:46 +0100 - Adicionar README.txt com instru├º├Áes de instala├º├úo e credenciais
+781efce - Maria Marques - 2026-06-24 17:19:18 +0100 - Atualizar README com URL correto
+7fef6b4 - Maria Marques - 2026-06-24 17:13:03 +0100 - Corrigir bugs de edi├º├úo, melhorar dashboard e atualizar documenta├º├úo do projeto
+feefcc5 - Maria Marques - 2026-06-24 06:54:22 +0100 - Adicionar p├ígina de altera├º├úo de palavra-passe
+95fdc07 - Maria Marques - 2026-06-24 06:04:01 +0100 - Adicionar perfis de utilizador e controlo de acesso por perfil
+cd861a2 - Maria Marques - 2026-06-24 05:09:09 +0100 - Implementar soft delete
+85b66f0 - Maria Marques - 2026-06-24 04:22:15 +0100 - Adicionar valida├º├Áes de formul├írio
+81b7d52 - Maria Marques - 2026-06-24 03:46:14 +0100 - Implementar formul├írio de contacto p├║blico e caixa de mensagens no backoffice
+26850b6 - Maria Marques - 2026-06-24 03:03:08 +0100 - Adicionar registo autom├ítico de eventos e associa├º├úo de fornecedores a equipamentos
+c82be45 - Maria Marques - 2026-06-24 02:24:34 +0100 - Implementar portal din├ómico, filtros de equipamentos e indicadores do dashboard
+6c4680c - Maria Marques - 2026-06-24 00:42:37 +0100 - Configurar URL base e corrigir autentica├º├úo no login
+2b419c3 - Maria Marques - 2026-06-23 23:59:27 +0100 - Ligar dashboard ├á base de dados com indicadores e alertas reais
+eca59b0 - Maria Marques - 2026-06-23 22:58:17 +0100 - Implementar gest├úo completa de garantias e contrato
+1f1d36a - Maria Marques - 2026-06-23 22:02:17 +0100 - Implementar gest├úo completa de documenta├º├úo t├®cnica
+7165161 - Maria Marques - 2026-06-23 19:58:29 +0100 - Implementar gest├úo completa de fornecedores com base de dados
+f64ab30 - Maria Marques - 2026-06-23 19:30:27 +0100 - Conectar m├│dulos ├á base de dados e implementar opera├º├Áes de detalhe e remo├º├ú
+cca0950 - Maria Marques - 2026-06-23 18:34:14 +0100 - Implementar inser├º├úo de equipamentos via POST com valida├º├úo
+e9f6259 - Maria Marques - 2026-06-23 14:18:32 +0100 - Cria├º├úo do modelo f├¡sico da base de dados
+6a4b54c - Maria Marques - 2026-06-22 17:11:01 +0100 - Remover ficheiros HTML substitu├¡dos pela migra├º├úo para PHP
+d3e14e3 - Maria Marques - 2026-06-22 00:07:21 +0100 - Implementar autentica├º├úo com sess├Áes PHP
+4a645e2 - Maria Marques - 2026-06-21 18:39:28 +0100 - Converter p├íginas p├║blicas de HTML para PHP e atualizar links de navega├º├úo
+e137b4d - Maria Marques - 2026-06-21 17:09:34 +0100 - Mover login para public/login.php e remover a pasta login
+9725263 - Maria Marques - 2026-06-20 23:32:57 +0100 - Merge branch 'main' of https://github.com/mariamarques1240913/projeto_SIBDAS
+d30e6d9 - Maria Marques - 2026-06-20 23:28:29 +0100 - Converter p├íginas privadas de HTML para PHP
+3626ad7 - Maria Marques - 2026-06-20 14:56:30 +0100 - Criar estrutura de ficheiros PHP
+8be8c73 - Maria Marques - 2026-06-20 11:27:00 +0100 - Adicionar campos em formul├írios de equipamentos e fornecedores
+f3d804a - Maria Marques - 2026-06-18 11:45:40 +0100 - Mover todo o JavaScript  para o ficheiro correto
+fa2d48d - Maria Marques - 2026-06-17 10:28:25 +0100 - Colocar as barras de pesquisa funcionais
+8bfc80c - Maria Marques - 2026-06-14 17:22:25 +0100 - Criar as tabelas e formularios de edicao na gestao do portal
+6a9af2e - Maria Marques - 2026-06-14 14:58:59 +0100 - Adicionado o m├│dulo de Gest├úo do Portal P├║blico ao menu lateral
+729a112 - Maria Marques - 2026-06-14 09:58:04 +0100 - Colocar o resto dos bot├Áes de a├º├Áes funcionais
+bef3571 - Maria Marques - 2026-06-12 22:59:01 +0100 - Colocar os bot├Áes de a├º├Áes funcionais
+38fee7a - Maria Marques - 2026-06-12 20:15:00 +0100 - meter o bot├úo de registar garantia ativo
+c58a8e9 - Maria Marques - 2026-06-12 12:16:36 +0100 - Meter o bot├úo de submeter documento funcional
+c13d282 - Maria Marques - 2026-06-12 00:39:18 +0100 - Meter o bot├úo de nova localiza├º├úo  funcional
+b0416bc - Maria Marques - 2026-06-12 00:21:34 +0100 - Meter o bot├úo de novo fornecedor funcional
+a9bb141 - Maria Marques - 2026-06-11 22:10:21 +0100 - Meter o bot├úo de novo equipamento funcional
+9185e0a - Maria Marques - 2026-06-11 20:26:15 +0100 - Adicionar tabela de alertas cr├¡ticos
+8294417 - Maria Marques - 2026-06-11 19:22:52 +0100 - Adicionar gr├ífico de barras dos equipamentos por servi├ºo
+5bd4c61 - Maria Marques - 2026-06-11 11:54:24 +0100 - Adicionar grafico donut do estado do inventario
+f842024 - Maria Marques - 2026-06-11 11:12:27 +0100 - Adicionar os cart├Áes do dashboard
+9c66634 - Maria Marques - 2026-06-10 22:50:04 +0100 - Adicionar as primeiras linhas da tabela de garantias e contratos
+9fe2083 - Maria Marques - 2026-06-10 21:06:38 +0100 - Criar o cabe├ºalho e a estrutura da tabela de garantias e contratos
+df48116 - Maria Marques - 2026-06-10 21:00:03 +0100 - Adicionar a barra de pesquisa e o bot├úo Registar Cobertura nas garantias
+9869c30 - Maria Marques - 2026-06-10 16:28:58 +0100 - Adicionar as primeiras linhas de documentos
+ca1fdb7 - Maria Marques - 2026-06-10 15:46:26 +0100 - Criar o cabe├ºalho e a estrutura da tabela de documenta├º├úo t├®cnica
+df9954c - Maria Marques - 2026-06-10 15:15:18 +0100 - Adicionar a barra de pesquisa e o bot├úo Submeter Documento
+96f4047 - Maria Marques - 2026-06-10 10:21:35 +0100 - Adicionar estrutura do cabe├ºalho da tabela de localiza├º├Áes e adicionar as primeiras localiza├º├Áes
+8f7fb8f - Maria Marques - 2026-06-10 10:12:40 +0100 - Adicionar a barra de pesquisa e o bot├úo Nova Localiza├º├úo
+4cc4a60 - Maria Marques - 2026-06-09 23:49:05 +0100 - Edi├º├úo da tabela e adi├º├úo do primeiro fornecedor
+d074396 - Maria Marques - 2026-06-09 23:28:01 +0100 - Adicionar barra de pesquisa e bot├úo de novo fornecedor
+caffd87 - Maria Marques - 2026-06-09 18:54:51 +0100 - Edi├º├úo da tabela e adi├º├úo do primeiro equipamento
+d7eacd9 - Maria Marques - 2026-06-09 18:23:30 +0100 - Adicionar estrutura do cabe├ºalho da tabela de equipamentos
+144750f - Maria Marques - 2026-06-09 18:08:44 +0100 - Adicionar barra de pesquisa e bot├úo de novo equipamento
+44461c6 - Maria Marques - 2026-06-09 17:52:41 +0100 - Adicionar esqueleto base da p├ígina de garantias e contratos
+b683c3d - Maria Marques - 2026-06-09 14:35:35 +0100 - Adicionar esqueleto base da p├ígina de documenta├º├úo t├®cnica
+3e05e28 - Maria Marques - 2026-06-09 14:26:19 +0100 - Adicionar esqueleto base da p├ígina de fornecedores
+44a5fa8 - Maria Marques - 2026-06-09 14:18:24 +0100 - Adicionar esqueleto base da p├ígina de localiza├º├Áes hospitalares
+822845f - Maria Marques - 2026-06-09 14:02:23 +0100 - Adicionar esqueleto base da p├ígina de equipamentos m├®dicos
+53e4c8a - Maria Marques - 2026-06-08 14:37:37 +0100 - Corre├º├úo do menu lateral no dashboard
+4b4630f - Maria Marques - 2026-06-07 15:21:56 +0100 - Liga├º├úo do formul├írio de login ao dashboard privado
+a50b37c - Maria Marques - 2026-06-07 15:05:42 +0100 - Estrutura├º├úo do menu lateral e ajuste do log├│tipo na navbar
+4fe68f7 - Maria Marques - 2026-06-07 12:15:40 +0100 - Adicionr rodap├® estrutural no fim do conteudo principal
+0693e64 - Maria Marques - 2026-06-06 19:04:26 +0100 - Atualizar a cor do navbar
+38d09ae - Maria Marques - 2026-06-06 18:51:09 +0100 - Estruturar a grelha do dashboard
+b93e552 - Maria Marques - 2026-06-06 18:09:18 +0100 - Adicionar barra de navega├º├úo superior ao dashboard
+d0cf69e - Maria Marques - 2026-06-06 17:13:37 +0100 - Crair esqueleto html base para o dashboard privado
+1e70594 - Maria Marques - 2026-06-04 18:41:26 +0100 - Adicionar favicon ao login
+89e5974 - Maria Marques - 2026-06-04 16:15:13 +0100 - Adicionar link de navega├º├úo para a p├ígina de login no menu p├║blico
+cdf468d - Maria Marques - 2026-06-04 15:44:24 +0100 - Atualiza├º├úo das cores do login
+dbaee70 - Maria Marques - 2026-06-02 22:41:16 +0100 - Criar estrutura base do login
+7c965d6 - Maria Marques - 2026-06-02 18:25:52 +0100 - Ajustar a largura maxima do formulario
+290f53d - Maria Marques - 2026-06-02 17:08:16 +0100 - Adicionr transicao suave nos estados de focus do formulario
+132938c - Maria Marques - 2026-05-23 23:33:07 +0100 - Ajustar estrutura do menu para manter itens centrados e responsivos ao encolher a tela
+100c76f - Maria Marques - 2026-05-23 15:59:26 +0100 - Estilizar formul├írio de contacto
+8dbc720 - Maria Marques - 2026-05-23 15:43:47 +0100 - Adicionar formul├írio para pedidos de contacto
+45114ff - Maria Marques - 2026-05-23 12:20:45 +0100 - Corrigir extens├úo do arquivo CSS e ajustar caminhos relativos no HTML
+5545eaf - Maria Marques - 2026-05-21 22:29:35 +0100 - Adicionar bot├úo de utilizador na barra de navega├º├úo"
+813f26b - Maria Marques - 2026-05-21 16:34:08 +0100 - Craia├º├úo da p├ígina FAQ
+7866bb6 - Maria Marques - 2026-05-21 14:24:00 +0100 - Adi├º├úo de banner de imagem em destaque na p├ígina inicial
+860ef3a - Maria Marques - 2026-05-20 23:13:24 +0100 - Atualiza├º├úo do design: ajuste da paleta de cores e inclus├úo de elementos gr├íficos
+5efd582 - Maria Marques - 2026-05-20 22:20:22 +0100 - Implementa├º├úo das caixas de destaque no conte├║do principal
+f1c56f8 - Maria Marques - 2026-05-20 22:11:15 +0100 - Adicionar rodape no index.html
+b75e3c0 - Maria Marques - 2026-05-20 21:42:48 +0100 - adicionar estrutura base e links do menu no index.html
+dd707f0 - Maria Marques - 2026-05-18 19:45:46 +0100 - Implementa├º├úo da arquitetura do esqueleto HTML
+cf6cc25 - Maria Marques - 2026-05-18 16:00:03 +0100 - Cria├º├úo dos diret├│rios
