@@ -110,3 +110,16 @@ ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Equipamento` FOREIGN KEY (`
 ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Fornecedor` FOREIGN KEY (`codFornecedor`) REFERENCES `Fornecedor` (`codFornecedor`);
 
 ALTER TABLE `Garantia` ADD CONSTRAINT `fk_Garantia_Equipamento` FOREIGN KEY (`codInventario`) REFERENCES `Equipamento` (`codInventario`);
+
+CREATE TABLE IF NOT EXISTS `ConteudoPortal` (
+  `chave` varchar(50) NOT NULL,
+  `valor` text,
+  CONSTRAINT `pk_ConteudoPortal` PRIMARY KEY (`chave`)
+);
+
+CREATE TABLE IF NOT EXISTS `FAQ` (
+  `codFAQ` int NOT NULL AUTO_INCREMENT,
+  `pergunta` text NOT NULL,
+  `resposta` text NOT NULL,
+  CONSTRAINT `pk_FAQ` PRIMARY KEY (`codFAQ`)
+);

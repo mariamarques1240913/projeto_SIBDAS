@@ -14,6 +14,9 @@ $equipamentoVer = null;
 $idEncriptadoVer = null;
 $equipamentoRemover = null;
 $idEncriptadoRemover = null;
+$fornecedoresVer = [];
+$fornecedoresAssociados = [];
+$documentosVer = [];
 
 $dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
 
@@ -40,6 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $equipamentoVer = $stmt->fetch(PDO::FETCH_OBJ);
+        $stmtFornVer = $ligacao->prepare("SELECT f.codFornecedor, f.nomeEmpresa, f.tipoFornecedor, f.contactoTelefonico, f.email FROM EquipamentoFornecedor ef JOIN Fornecedor f ON ef.codFornecedor = f.codFornecedor WHERE ef.codInventario = ?");
+        $stmtFornVer->execute([$idDecriptado]);
+        $fornecedoresVer = $stmtFornVer->fetchAll(PDO::FETCH_OBJ);
+        $stmtDocsVer = $ligacao->prepare("SELECT tipoDocumento, nomeDocumento, dataDocumento, dataValidade FROM Documento WHERE codInventario = ? ORDER BY dataDocumento DESC");
+        $stmtDocsVer->execute([$idDecriptado]);
+        $documentosVer = $stmtDocsVer->fetchAll(PDO::FETCH_OBJ);
         $ligacao = null;
         if (!$equipamentoVer) {
             header('Location: equipamentos.php');
@@ -117,6 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['editar'])) {
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $equipamentoEditar = $stmt->fetch(PDO::FETCH_OBJ);
+        if ($equipamentoEditar) {
+            $stmtFornEdit = $ligacao->prepare("SELECT codFornecedor FROM EquipamentoFornecedor WHERE codInventario = ?");
+            $stmtFornEdit->execute([$idDecriptado]);
+            $fornecedoresAssociados = array_column($stmtFornEdit->fetchAll(PDO::FETCH_ASSOC), 'codFornecedor');
+        }
         $ligacao = null;
         if (!$equipamentoEditar) {
             header('Location: equipamentos.php');
@@ -186,6 +200,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
                 ':tipoEntrada'    => $tipoEntrada,    ':estado'         => $estado,
                 ':criticidade'    => $criticidade,    ':observacoes'    => $observacoes ?: null,
             ]);
+            $novoId = (int)$ligacao->lastInsertId();
+            $fornecedoresPost = array_map('intval', $_POST['fornecedores'] ?? []);
+            if ($novoId && !empty($fornecedoresPost)) {
+                $stmtForn = $ligacao->prepare("INSERT IGNORE INTO EquipamentoFornecedor (codInventario, codFornecedor) VALUES (?, ?)");
+                foreach ($fornecedoresPost as $fId) { $stmtForn->execute([$novoId, $fId]); }
+            }
             $ligacao = null;
             header('Location: equipamentos.php');
             exit;
@@ -261,6 +281,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
                 ':tipoEntrada'    => $tipoEntrada,    ':estado'         => $estado,
                 ':criticidade'    => $criticidade,    ':observacoes'    => $observacoes ?: null,
             ]);
+            $fornecedoresPost = array_map('intval', $_POST['fornecedores'] ?? []);
+            $ligacao->prepare("DELETE FROM EquipamentoFornecedor WHERE codInventario = ?")->execute([$idDecriptado]);
+            if (!empty($fornecedoresPost)) {
+                $stmtForn = $ligacao->prepare("INSERT IGNORE INTO EquipamentoFornecedor (codInventario, codFornecedor) VALUES (?, ?)");
+                foreach ($fornecedoresPost as $fId) { $stmtForn->execute([$idDecriptado, $fId]); }
+            }
             $ligacao = null;
             header('Location: equipamentos.php');
             exit;
@@ -271,25 +297,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
     }
 }
 
+// Filtros de pesquisa (via GET)
+$filtro_q           = trim($_GET['q']            ?? '');
+$filtro_estado      = trim($_GET['estado']       ?? '');
+$filtro_criticidade = trim($_GET['criticidade']  ?? '');
+$filtro_categoria   = trim($_GET['codCategoria'] ?? '');
+
 // Carregar dados para listagem e selects
 try {
     $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $resultados = $ligacao->query("
+
+    $filtroParams = [];
+    $filtroWhere  = [];
+    if ($filtro_q !== '') {
+        $filtroWhere[]      = "(e.designacao LIKE :q OR e.marca LIKE :q OR e.modelo LIKE :q)";
+        $filtroParams[':q'] = '%' . $filtro_q . '%';
+    }
+    if ($filtro_estado !== '') {
+        $filtroWhere[]               = "e.estado = :estado";
+        $filtroParams[':estado']     = $filtro_estado;
+    }
+    if ($filtro_criticidade !== '') {
+        $filtroWhere[]                   = "e.criticidade = :criticidade";
+        $filtroParams[':criticidade']    = $filtro_criticidade;
+    }
+    if ($filtro_categoria !== '') {
+        $filtroWhere[]                   = "e.codCategoria = :codCategoria";
+        $filtroParams[':codCategoria']   = (int)$filtro_categoria;
+    }
+    $whereClause = !empty($filtroWhere) ? 'WHERE ' . implode(' AND ', $filtroWhere) : '';
+
+    $stmtLista = $ligacao->prepare("
         SELECT e.codInventario, e.designacao, e.marca, e.modelo, e.nrSerie, e.estado, e.criticidade,
                c.designacao AS categoria,
                CONCAT(l.edificio, ' - ', l.servico) AS localizacao
         FROM Equipamento e
         LEFT JOIN Categoria c ON e.codCategoria = c.codCategoria
         LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
+        $whereClause
         ORDER BY e.codInventario
-    ")->fetchAll(PDO::FETCH_OBJ);
-    $categorias   = $ligacao->query("SELECT codCategoria, designacao FROM Categoria ORDER BY designacao")->fetchAll(PDO::FETCH_OBJ);
-    $localizacoes = $ligacao->query("SELECT codLocalizacao, edificio, piso, servico FROM Localizacao ORDER BY edificio, servico")->fetchAll(PDO::FETCH_OBJ);
+    ");
+    $stmtLista->execute($filtroParams);
+    $resultados   = $stmtLista->fetchAll(PDO::FETCH_OBJ);
+    $categorias      = $ligacao->query("SELECT codCategoria, designacao FROM Categoria ORDER BY designacao")->fetchAll(PDO::FETCH_OBJ);
+    $localizacoes    = $ligacao->query("SELECT codLocalizacao, edificio, piso, servico FROM Localizacao ORDER BY edificio, servico")->fetchAll(PDO::FETCH_OBJ);
+    $todosFornecedores = $ligacao->query("SELECT codFornecedor, nomeEmpresa, tipoFornecedor FROM Fornecedor ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {
     $erro = "Aconteceu um erro na ligação à base de dados.";
-    $resultados = []; $categorias = []; $localizacoes = [];
+    $resultados = []; $categorias = []; $localizacoes = []; $todosFornecedores = [];
 }
 $ligacao = null;
 
@@ -324,6 +381,60 @@ include 'includes/nav.php';
                     <i class="fa-solid fa-plus me-2"></i>Novo Equipamento
                 </button>
             </div>
+
+            <!-- Filtros de pesquisa -->
+            <div class="card border shadow-sm rounded bg-white mb-3">
+                <div class="card-body py-3 px-4">
+                    <form method="GET" action="equipamentos.php" class="row g-2 align-items-end">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-bold text-secondary small mb-1">Pesquisar</label>
+                            <input type="text" class="form-control form-control-sm" name="q"
+                                   placeholder="Designação, marca ou modelo..."
+                                   value="<?= htmlspecialchars($filtro_q) ?>">
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label fw-bold text-secondary small mb-1">Estado</label>
+                            <select class="form-select form-select-sm" name="estado">
+                                <option value="">Todos</option>
+                                <?php foreach (['Ativo', 'Em manutencao', 'Em calibracao', 'Em quarentena', 'Abatido'] as $opt) : ?>
+                                <option value="<?= $opt ?>" <?= $filtro_estado === $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label fw-bold text-secondary small mb-1">Criticidade</label>
+                            <select class="form-select form-select-sm" name="criticidade">
+                                <option value="">Todas</option>
+                                <?php foreach (['Baixa', 'Media', 'Alta', 'Suporte de vida'] as $opt) : ?>
+                                <option value="<?= $opt ?>" <?= $filtro_criticidade === $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label fw-bold text-secondary small mb-1">Categoria</label>
+                            <select class="form-select form-select-sm" name="codCategoria">
+                                <option value="">Todas</option>
+                                <?php foreach ($categorias as $cat) : ?>
+                                <option value="<?= $cat->codCategoria ?>" <?= (string)$filtro_categoria === (string)$cat->codCategoria ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($cat->designacao) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-sm fw-bold text-white w-100" style="background-color: #1d5370;">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i>Filtrar
+                            </button>
+                            <?php if ($filtro_q || $filtro_estado || $filtro_criticidade || $filtro_categoria) : ?>
+                            <a href="equipamentos.php" class="btn btn-sm btn-outline-secondary">Limpar</a>
+                            <?php endif; ?>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <?php if ($filtro_q || $filtro_estado || $filtro_criticidade || $filtro_categoria) : ?>
+            <p class="text-muted small mb-2"><i class="fa-solid fa-filter me-1"></i><?= count($resultados) ?> resultado(s) encontrado(s)</p>
+            <?php endif; ?>
 
             <div class="table-responsive bg-white rounded shadow-sm border">
                 <?php if (!empty($erro)) : ?>
@@ -539,6 +650,29 @@ include 'includes/nav.php';
                             <textarea class="form-control" name="observacoes" rows="2"
                                       placeholder="Notas adicionais..."><?= htmlspecialchars($v('observacoes')) ?></textarea>
                         </div>
+                        <?php if (!empty($todosFornecedores)) : ?>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small">Fornecedores Associados</label>
+                            <div class="border rounded p-3 bg-light" style="max-height: 150px; overflow-y: auto;">
+                                <div class="row g-2">
+                                <?php foreach ($todosFornecedores as $tf) : ?>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="fornecedores[]"
+                                                   value="<?= $tf->codFornecedor ?>"
+                                                   id="forn_<?= $tf->codFornecedor ?>"
+                                                   <?= in_array((string)$tf->codFornecedor, array_map('strval', $fornecedoresAssociados)) ? 'checked' : '' ?>>
+                                            <label class="form-check-label small" for="forn_<?= $tf->codFornecedor ?>">
+                                                <strong><?= htmlspecialchars($tf->nomeEmpresa) ?></strong>
+                                                <span class="text-muted">(<?= htmlspecialchars($tf->tipoFornecedor) ?>)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </form>
             </div>
@@ -575,6 +709,22 @@ include 'includes/nav.php';
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#localizacao-pane" type="button">
                             <i class="fa-solid fa-map-location-dot me-1"></i> Localização
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docs-pane" type="button">
+                            <i class="fa-solid fa-file-medical me-1"></i> Documentação
+                            <?php if (!empty($documentosVer)) : ?>
+                            <span class="badge ms-1 text-white" style="background-color: #1d5370;"><?= count($documentosVer) ?></span>
+                            <?php endif; ?>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fornecedores-pane" type="button">
+                            <i class="fa-solid fa-truck me-1"></i> Fornecedores
+                            <?php if (!empty($fornecedoresVer)) : ?>
+                            <span class="badge ms-1 text-white" style="background-color: #1d5370;"><?= count($fornecedoresVer) ?></span>
+                            <?php endif; ?>
                         </button>
                     </li>
                 </ul>
@@ -654,6 +804,75 @@ include 'includes/nav.php';
                             Localização Atual:
                             <strong><?= $equipamentoVer ? htmlspecialchars($equipamentoVer->nomeLocalizacao ?? '-') : '-' ?></strong>
                         </p>
+                    </div>
+                    <div class="tab-pane fade" id="docs-pane" tabindex="0">
+                        <?php if (empty($documentosVer)) : ?>
+                            <p class="text-muted mt-3"><i class="fa-solid fa-info-circle me-1"></i>Nenhum documento registado para este equipamento.</p>
+                        <?php else : ?>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="color: #1d5370;">Nome do Documento</th>
+                                        <th style="color: #1d5370;">Tipo</th>
+                                        <th style="color: #1d5370;">Data</th>
+                                        <th style="color: #1d5370;">Validade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($documentosVer as $doc) :
+                                        $hoje = new DateTime();
+                                        $validade = $doc->dataValidade ? new DateTime($doc->dataValidade) : null;
+                                        $expirado = $validade && $validade < $hoje;
+                                    ?>
+                                    <tr>
+                                        <td class="fw-bold"><?= htmlspecialchars($doc->nomeDocumento) ?></td>
+                                        <td><span class="badge text-white" style="background-color: #7fa2b1;"><?= htmlspecialchars($doc->tipoDocumento) ?></span></td>
+                                        <td><?= $doc->dataDocumento ? date('d/m/Y', strtotime($doc->dataDocumento)) : '-' ?></td>
+                                        <td>
+                                            <?php if ($validade) : ?>
+                                            <span class="<?= $expirado ? 'text-danger fw-bold' : 'text-success' ?>">
+                                                <?= date('d/m/Y', strtotime($doc->dataValidade)) ?>
+                                                <?= $expirado ? ' <i class="fa-solid fa-triangle-exclamation"></i>' : '' ?>
+                                            </span>
+                                            <?php else : ?>
+                                            <span class="text-muted">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="tab-pane fade" id="fornecedores-pane" tabindex="0">
+                        <?php if (empty($fornecedoresVer)) : ?>
+                            <p class="text-muted mt-3"><i class="fa-solid fa-info-circle me-1"></i>Nenhum fornecedor associado a este equipamento.</p>
+                        <?php else : ?>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="color: #1d5370;">Fornecedor</th>
+                                        <th style="color: #1d5370;">Tipo</th>
+                                        <th style="color: #1d5370;">Contacto</th>
+                                        <th style="color: #1d5370;">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($fornecedoresVer as $fv) : ?>
+                                    <tr>
+                                        <td class="fw-bold"><?= htmlspecialchars($fv->nomeEmpresa) ?></td>
+                                        <td><span class="badge text-white" style="background-color: #7fa2b1;"><?= htmlspecialchars($fv->tipoFornecedor) ?></span></td>
+                                        <td><?= htmlspecialchars($fv->contactoTelefonico ?? '-') ?></td>
+                                        <td><?= htmlspecialchars($fv->email ?? '-') ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -9,10 +9,14 @@ try {
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // KPIs: contagens simples
-    $totalEquipamentos = $ligacao->query("SELECT COUNT(*) FROM Equipamento")->fetchColumn();
-    $emManutencao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado = 'Em manutencao'")->fetchColumn();
-    $garantiasAlerta   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
-    $totalDocumentos   = $ligacao->query("SELECT COUNT(*) FROM Documento")->fetchColumn();
+    $totalEquipamentos    = $ligacao->query("SELECT COUNT(*) FROM Equipamento")->fetchColumn();
+    $emManutencao         = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado = 'Em manutencao'")->fetchColumn();
+    $garantiasAlerta      = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
+    $totalDocumentos      = $ligacao->query("SELECT COUNT(*) FROM Documento")->fetchColumn();
+    // KPIs de alerta
+    $equipamentosInativos = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado != 'Ativo'")->fetchColumn();
+    $garantiasExpiradas   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim < CURDATE()")->fetchColumn();
+    $semDocumentacao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento e WHERE NOT EXISTS (SELECT 1 FROM Documento d WHERE d.codInventario = e.codInventario)")->fetchColumn();
 
     // Gráfico donut: contagem por estado
     $dadosEstado = $ligacao->query("SELECT estado, COUNT(*) AS total FROM Equipamento GROUP BY estado ORDER BY total DESC")->fetchAll(PDO::FETCH_OBJ);
@@ -49,6 +53,7 @@ try {
 } catch (PDOException $e) {
     $erro = "Erro ao ligar à base de dados.";
     $totalEquipamentos = 0; $emManutencao = 0; $garantiasAlerta = 0; $totalDocumentos = 0;
+    $equipamentosInativos = 0; $garantiasExpiradas = 0; $semDocumentacao = 0;
     $dadosEstado = []; $dadosServico = []; $alertas = [];
 }
 $ligacao = null;
@@ -132,6 +137,54 @@ include 'includes/nav.php';
                             </div>
                             <div class="fs-2 opacity-75" style="color: #b2dfdb;">
                                 <i class="fa-solid fa-file-medical"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIs de alerta -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ef9a9a !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Equipamentos Inativos</h6>
+                                <span class="h3 fw-bold <?= $equipamentosInativos > 0 ? 'text-danger' : 'text-dark' ?>"><?= $equipamentosInativos ?></span>
+                                <div class="small text-muted mt-1">estado diferente de "Ativo"</div>
+                            </div>
+                            <div class="fs-2 opacity-75" style="color: #ef9a9a;">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ffcc80 !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Garantias Expiradas</h6>
+                                <span class="h3 fw-bold <?= $garantiasExpiradas > 0 ? 'text-warning' : 'text-dark' ?>"><?= $garantiasExpiradas ?></span>
+                                <div class="small text-muted mt-1">data de fim anterior a hoje</div>
+                            </div>
+                            <div class="fs-2 opacity-75" style="color: #ffcc80;">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ce93d8 !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Sem Documentação</h6>
+                                <span class="h3 fw-bold <?= $semDocumentacao > 0 ? 'text-danger' : 'text-dark' ?>"><?= $semDocumentacao ?></span>
+                                <div class="small text-muted mt-1">equipamentos sem ficheiros</div>
+                            </div>
+                            <div class="fs-2 opacity-75" style="color: #ce93d8;">
+                                <i class="fa-solid fa-file-circle-xmark"></i>
                             </div>
                         </div>
                     </div>

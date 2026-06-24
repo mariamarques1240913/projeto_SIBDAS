@@ -1,19 +1,31 @@
-<?php require_once '../config/config.php'; ?>
+<?php
+require_once '../config/config.php';
+
+try {
+    $dsn_pub = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
+    $ligacao = new PDO($dsn_pub, MYSQL_USERNAME, MYSQL_PASSWORD);
+    $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $cp_bd = $ligacao->query("SELECT chave, valor FROM ConteudoPortal")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $faqs  = $ligacao->query("SELECT * FROM FAQ ORDER BY codFAQ")->fetchAll(PDO::FETCH_OBJ);
+    $ligacao = null;
+} catch (PDOException $e) { $cp_bd = []; $faqs = []; }
+$cp = fn($k, $d = '') => htmlspecialchars($cp_bd[$k] ?? $d);
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo APP_NAME; ?> - Dúvidas Frequentes</title>
-    <link rel="icon" type="image/png" href="/projeto_SIBDAS/assets/img/coracao.png">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/img/coracao.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/projeto_SIBDAS/assets/css/1240913.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/1240913.css">
 </head>
 <body>
 
     <header class="topo-site">
-        <img src="/projeto_SIBDAS/assets/img/logotipo_hospital.png" alt="Logótipo Hospitally" class="logo-hospital">
+        <img src="<?= BASE_URL ?>/assets/img/logotipo_hospital.png" alt="Logótipo Hospitally" class="logo-hospital">
         <div class="topo-site-texto">
             <h1><?php echo APP_NAME; ?></h1>
             <p>Sistema de Gestão de Cuidados Hospitalares</p>
@@ -37,61 +49,31 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-8">
 
+                    <?php if (empty($faqs)) : ?>
+                        <div class="text-center text-muted py-4">Não existem perguntas frequentes disponíveis neste momento.</div>
+                    <?php else : ?>
                     <div class="accordion shadow-sm" id="faqAccordion">
-
+                        <?php foreach ($faqs as $i => $faq) : ?>
                         <div class="accordion-item border-0 mb-2 rounded overflow-hidden">
                             <h2 class="accordion-header">
-                                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1" style="color: #2b4c5e; background-color: #eef5f8;">
-                                    1. O que se entende por criticidade de um dispositivo médico?
+                                <button class="accordion-button <?= $i > 0 ? 'collapsed' : '' ?> fw-bold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#faq<?= $faq->codFAQ ?>"
+                                        aria-expanded="<?= $i === 0 ? 'true' : 'false' ?>"
+                                        aria-controls="faq<?= $faq->codFAQ ?>"
+                                        style="color: #2b4c5e; background-color: #eef5f8;">
+                                    <?= ($i + 1) . '. ' . htmlspecialchars($faq->pergunta) ?>
                                 </button>
                             </h2>
-                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div id="faq<?= $faq->codFAQ ?>" class="accordion-collapse collapse <?= $i === 0 ? 'show' : '' ?>" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body text-muted">
-                                    A criticidade clínica avalia o impacto e o risco potencial que a falha de um equipamento pode causar ao paciente. Dispositivos de suporte de vida (como ventiladores) têm prioridade e criticidade máxima, exigindo planos de monitorização e contingência rigorosos.
+                                    <?= htmlspecialchars($faq->resposta) ?>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="accordion-item border-0 mb-2 rounded overflow-hidden">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2" style="color: #2b4c5e; background-color: #eef5f8;">
-                                    2. Qual é a importância de manter a ficha técnica e a documentação atualizadas?
-                                </button>
-                            </h2>
-                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body text-muted">
-                                    A documentação centralizada garante que manuais de operação, diretrizes de segurança e registos do fabricante estejam acessíveis a qualquer momento. Isto previne erros de operação pelas equipas de saúde e assegura a conformidade legal do hospital.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accordion-item border-0 mb-2 rounded overflow-hidden">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3" style="color: #2b4c5e; background-color: #eef5f8;">
-                                    3. Como se define a periodicidade das manutenções preventivas e calibrações?
-                                </button>
-                            </h2>
-                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body text-muted">
-                                    Os intervalos de verificação técnica são determinados com base nas recomendações explícitas do fabricante, na intensidade de uso do dispositivo dentro das respetivas unidades e na regulamentação de segurança médica em vigor.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accordion-item border-0 rounded overflow-hidden">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4" style="color: #2b4c5e; background-color: #eef5f8;">
-                                    4. Qual é o papel da gestão de fornecedores num ambiente biomédico hospitalar?
-                                </button>
-                            </h2>
-                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body text-muted">
-                                    Controlar o histórico de fornecedores autorizados permite rastrear a origem das peças de substituição, validar contratos de assistência pós-venda técnica e garantir que apenas entidades certificadas realizam intervenções nos equipamentos do inventário.
-                                </div>
-                            </div>
-                        </div>
-
+                        <?php endforeach; ?>
                     </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
         </div>
@@ -101,20 +83,16 @@
         <div class="rodape-container">
             <div class="rodape-coluna">
                 <h3>LOCALIZAÇÃO</h3>
-                <p>Avenida da Boavista, nº 2045</p>
-                <p>4100-131 Porto</p>
-                <p>Portugal</p>
+                <p><?= $cp('morada', 'Avenida da Boavista, nº 2045, 4100-131 Porto, Portugal') ?></p>
             </div>
             <div class="rodape-coluna">
                 <h3>HORÁRIO</h3>
-                <p>2ª a 6ª Feira: 7h — 21h</p>
-                <p>Sábado e Feriados: 9h — 15h</p>
-                <p>Domingo: Encerrado</p>
+                <p><?= $cp('horario', '2ª a 6ª Feira: 7h — 21h | Sábado e Feriados: 9h — 15h | Domingo: Encerrado') ?></p>
             </div>
             <div class="rodape-coluna">
                 <h3>CONTACTOS</h3>
-                <p>Email: geral@hospitally.pt</p>
-                <p>Telefone: +351 225 913 028</p>
+                <p>Email: <?= $cp('email', 'geral@hospitally.pt') ?></p>
+                <p>Telefone: <?= $cp('telefone', '+351 225 913 028') ?></p>
             </div>
         </div>
         <div class="rodape-direitos">
@@ -123,6 +101,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/projeto_SIBDAS/assets/js/1240913.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/1240913.js"></script>
 </body>
 </html>
