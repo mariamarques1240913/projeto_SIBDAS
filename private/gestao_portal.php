@@ -14,9 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'salvar_
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("INSERT INTO ConteudoPortal (chave, valor) VALUES (:k, :v) ON DUPLICATE KEY UPDATE valor = :v");
+        // ON DUPLICATE KEY UPDATE funciona como upsert: insere se a chave não existir, atualiza se já existir
+        $stmt = $ligacao->prepare("INSERT INTO ConteudoPortal (chave, valor) VALUES (:k, :v) ON DUPLICATE KEY UPDATE valor = :v2");
         foreach (['quem_somos', 'missao', 'telefone', 'email', 'morada', 'horario'] as $k) {
-            $stmt->execute([':k' => $k, ':v' => trim($_POST[$k] ?? '')]);
+            $valor = trim($_POST[$k] ?? '');
+            $stmt->execute([':k' => $k, ':v' => $valor, ':v2' => $valor]);
         }
         $ligacao = null;
         header('Location: gestao_portal.php?sucesso=1');
@@ -169,7 +171,7 @@ include 'includes/nav.php';
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label class="form-label fw-bold text-secondary small">E-mail Institucional</label>
-                                        <input type="email" class="form-control" name="email" value="<?= $cp('email', 'geral@hospitally.pt') ?>" required>
+                                        <input type="text" class="form-control" name="email" value="<?= $cp('email', 'geral@hospitally.pt') ?>" required>
                                     </div>
                                 </div>
                                 <div class="mb-3">

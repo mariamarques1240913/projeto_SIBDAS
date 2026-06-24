@@ -3,6 +3,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/includes/funcoes.php';
 start_session();
 
+// Bloqueia acesso direto via GET — este ficheiro só deve ser chamado pelo formulário de login
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . BASE_URL . '/public/login.php');
     exit;
@@ -26,7 +27,6 @@ if (!empty($validation_errors)) {
     exit;
 }
 
-// Verificação de credenciais via base de dados (Ficha 14 - Secção 3)
 try {
     $dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
     $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
@@ -38,6 +38,7 @@ try {
     $utilizador = $stmt->fetch(PDO::FETCH_OBJ);
     $ligacao = null;
 
+    // A mensagem de erro é propositadamente genérica para não revelar se o email existe
     if (!$utilizador || !password_verify($password, $utilizador->password)) {
         $_SESSION['server_error'] = 'Email ou password incorretos.';
         header('Location: ' . BASE_URL . '/public/login.php');

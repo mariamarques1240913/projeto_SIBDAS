@@ -197,7 +197,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
             $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
             $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $ligacao->prepare("UPDATE Documento SET codInventario=:codInventario, codFornecedor=:codFornecedor, tipoDocumento=:tipoDocumento, nomeDocumento=:nomeDocumento, dataDocumento=:dataDocumento, dataValidade=:dataValidade, localizacaoFicheiro=:localizacaoFicheiro WHERE codDocumento=:id");
-            $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
             $stmt->execute([
                 ':codInventario'       => $codInventario,
                 ':codFornecedor'       => $codFornecedor       ?: null,
@@ -206,6 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
                 ':dataDocumento'       => $dataDocumento       ?: null,
                 ':dataValidade'        => $dataValidade        ?: null,
                 ':localizacaoFicheiro' => $localizacaoFicheiro ?: null,
+                ':id'                  => $idDecriptado,
             ]);
             $ligacao = null;
             header('Location: documentacao.php'); exit;
@@ -289,12 +289,14 @@ include 'includes/nav.php';
                         <tbody>
                             <?php foreach ($resultados as $doc) :
                                 $tipoCor = match($doc->tipoDocumento) {
-                                    'Manual'      => 'primary',
-                                    'Guia'        => 'success',
-                                    'Relatório'   => 'warning',
-                                    'Certificado' => 'info',
-                                    'Contrato'    => 'dark',
-                                    default       => 'secondary'
+                                    'manual utilizador'      => 'primary',
+                                    'manual servico'         => 'success',
+                                    'relatorio tecnico'      => 'warning',
+                                    'certificado calibracao' => 'info',
+                                    'contrato manutencao'    => 'dark',
+                                    'fatura'                 => 'danger',
+                                    'declaracao conformidade'=> 'secondary',
+                                    default                  => 'secondary'
                                 };
                             ?>
                             <tr>
@@ -412,12 +414,13 @@ include 'includes/nav.php';
                             <label class="form-label fw-bold text-secondary small">Tipo de Documento</label>
                             <select class="form-select" name="tipoDocumento" required>
                                 <option value="" disabled <?= $v('tipoDocumento') === '' ? 'selected' : '' ?>>Selecione...</option>
-                                <option value="Manual"      <?= $v('tipoDocumento') === 'Manual'      ? 'selected' : '' ?>>Manual do Utilizador</option>
-                                <option value="Guia"        <?= $v('tipoDocumento') === 'Guia'        ? 'selected' : '' ?>>Guia de Consulta Rápida</option>
-                                <option value="Relatório"   <?= $v('tipoDocumento') === 'Relatório'   ? 'selected' : '' ?>>Relatório de Manutenção</option>
-                                <option value="Certificado" <?= $v('tipoDocumento') === 'Certificado' ? 'selected' : '' ?>>Certificado de Calibração</option>
-                                <option value="Contrato"    <?= $v('tipoDocumento') === 'Contrato'    ? 'selected' : '' ?>>Contrato</option>
-                                <option value="Outro"       <?= $v('tipoDocumento') === 'Outro'       ? 'selected' : '' ?>>Outro</option>
+                                <option value="manual utilizador"       <?= $v('tipoDocumento') === 'manual utilizador'       ? 'selected' : '' ?>>Manual do Utilizador</option>
+                                <option value="manual servico"          <?= $v('tipoDocumento') === 'manual servico'          ? 'selected' : '' ?>>Manual de Serviço</option>
+                                <option value="certificado calibracao"  <?= $v('tipoDocumento') === 'certificado calibracao'  ? 'selected' : '' ?>>Certificado de Calibração</option>
+                                <option value="contrato manutencao"     <?= $v('tipoDocumento') === 'contrato manutencao'     ? 'selected' : '' ?>>Contrato de Manutenção</option>
+                                <option value="fatura"                  <?= $v('tipoDocumento') === 'fatura'                  ? 'selected' : '' ?>>Fatura</option>
+                                <option value="declaracao conformidade"  <?= $v('tipoDocumento') === 'declaracao conformidade' ? 'selected' : '' ?>>Declaração de Conformidade</option>
+                                <option value="relatorio tecnico"       <?= $v('tipoDocumento') === 'relatorio tecnico'       ? 'selected' : '' ?>>Relatório Técnico</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -471,12 +474,14 @@ include 'includes/nav.php';
             <div class="modal-body p-4">
                 <?php if ($documentoVer) :
                     $tipoCor = match($documentoVer->tipoDocumento) {
-                        'Manual'      => 'primary',
-                        'Guia'        => 'success',
-                        'Relatório'   => 'warning',
-                        'Certificado' => 'info',
-                        'Contrato'    => 'dark',
-                        default       => 'secondary'
+                        'manual utilizador'      => 'primary',
+                        'manual servico'         => 'success',
+                        'relatorio tecnico'      => 'warning',
+                        'certificado calibracao' => 'info',
+                        'contrato manutencao'    => 'dark',
+                        'fatura'                 => 'danger',
+                        'declaracao conformidade'=> 'secondary',
+                        default                  => 'secondary'
                     };
                 ?>
                 <div class="row g-3">

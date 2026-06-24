@@ -2,6 +2,7 @@
 require_once __DIR__ . '/includes/funcoes.php';
 redirect_if_not_logged();
 
+// Profissional de saúde só pode consultar — qualquer tentativa de escrita é bloqueada aqui
 $soLeitura = (perfil_atual() === 'profissional de saude');
 if ($soLeitura && ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['editar']) || isset($_GET['remover']))) {
     $_SESSION['server_error'] = 'Não tem permissão para realizar esta ação.';
@@ -24,6 +25,7 @@ $idEncriptadoRemover = null;
 $fornecedoresVer = [];
 $fornecedoresAssociados = [];
 $documentosVer = [];
+$garantiasVer = [];
 
 $dsn = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
 
@@ -53,9 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
         $stmtFornVer = $ligacao->prepare("SELECT f.codFornecedor, f.nomeEmpresa, f.tipoFornecedor, f.contactoTelefonico, f.email FROM EquipamentoFornecedor ef JOIN Fornecedor f ON ef.codFornecedor = f.codFornecedor WHERE ef.codInventario = ?");
         $stmtFornVer->execute([$idDecriptado]);
         $fornecedoresVer = $stmtFornVer->fetchAll(PDO::FETCH_OBJ);
-        $stmtDocsVer = $ligacao->prepare("SELECT tipoDocumento, nomeDocumento, dataDocumento, dataValidade FROM Documento WHERE codInventario = ? ORDER BY dataDocumento DESC");
+        $stmtDocsVer = $ligacao->prepare("SELECT tipoDocumento, nomeDocumento, dataDocumento, dataValidade FROM Documento WHERE codInventario = ? AND eliminado = 0 ORDER BY dataDocumento DESC");
         $stmtDocsVer->execute([$idDecriptado]);
         $documentosVer = $stmtDocsVer->fetchAll(PDO::FETCH_OBJ);
+        $stmtGarVer = $ligacao->prepare("SELECT dataInicio, dataFim, temContrato, tipoContrato, entidadeResponsavel, periodicidade, observacoes FROM Garantia WHERE codInventario = ? AND eliminado = 0 ORDER BY dataFim DESC");
+        $stmtGarVer->execute([$idDecriptado]);
+        $garantiasVer = $stmtGarVer->fetchAll(PDO::FETCH_OBJ);
         $ligacao = null;
         if (!$equipamentoVer) {
             header('Location: equipamentos.php');
@@ -106,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Guarda o nome antes de marcar como eliminado para poder registar o evento com descrição legível
         $stmtNome = $ligacao->prepare("SELECT CONCAT(designacao, ' (', marca, ' / ', modelo, ')') FROM Equipamento WHERE codInventario = :id");
         $stmtNome->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmtNome->execute();
@@ -226,6 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
             $novoId = (int)$ligacao->lastInsertId();
             $fornecedoresPost = array_map('intval', $_POST['fornecedores'] ?? []);
             if ($novoId && !empty($fornecedoresPost)) {
+                // INSERT IGNORE evita erro caso a associação já exista (chave composta na tabela)
                 $stmtForn = $ligacao->prepare("INSERT IGNORE INTO EquipamentoFornecedor (codInventario, codFornecedor) VALUES (?, ?)");
                 foreach ($fornecedoresPost as $fId) { $stmtForn->execute([$novoId, $fId]); }
             }
@@ -733,7 +740,7 @@ include 'includes/nav.php';
 
 <!-- Modal Detalhes Equipamento (Ficha 14 - Secção 1) -->
 <div class="modal fade" id="modalDetalhesEquipamento" tabindex="-1" aria-labelledby="modalDetalhesLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header text-white modal-header-hospital border-bottom-0">
                 <h5 class="modal-title fw-bold" id="modalDetalhesLabel">
@@ -745,7 +752,7 @@ include 'includes/nav.php';
                 <a href="equipamentos.php" class="btn-close btn-close-white" aria-label="Close"></a>
             </div>
             <div class="modal-body p-4">
-                <ul class="nav nav-tabs mb-4" role="tablist">
+                <ul class="nav nav-tabs mb-4 flex-nowrap overflow-auto" role="tablist">
                     <li class="nav-item">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dados-pane" type="button">
                             <i class="fa-solid fa-box me-1"></i> Dados Gerais
@@ -769,6 +776,14 @@ include 'includes/nav.php';
                             <i class="fa-solid fa-truck me-1"></i> Fornecedores
                             <?php if (!empty($fornecedoresVer)) : ?>
                             <span class="badge ms-1 text-white" style="background-color: #1d5370;"><?= count($fornecedoresVer) ?></span>
+                            <?php endif; ?>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#garantias-pane" type="button">
+                            <i class="fa-solid fa-file-signature me-1"></i> Garantias
+                            <?php if (!empty($garantiasVer)) : ?>
+                            <span class="badge ms-1 text-white" style="background-color: #1d5370;"><?= count($garantiasVer) ?></span>
                             <?php endif; ?>
                         </button>
                     </li>
@@ -914,6 +929,47 @@ include 'includes/nav.php';
                                         <td><span class="badge text-white" style="background-color: #7fa2b1;"><?= htmlspecialchars($fv->tipoFornecedor) ?></span></td>
                                         <td><?= htmlspecialchars($fv->contactoTelefonico ?? '-') ?></td>
                                         <td><?= htmlspecialchars($fv->email ?? '-') ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="tab-pane fade" id="garantias-pane" tabindex="0">
+                        <?php if (empty($garantiasVer)) : ?>
+                            <p class="text-muted mt-3"><i class="fa-solid fa-info-circle me-1"></i>Nenhuma garantia ou contrato registado para este equipamento.</p>
+                        <?php else : ?>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="color: #1d5370;">Período</th>
+                                        <th style="color: #1d5370;">Estado</th>
+                                        <th style="color: #1d5370;">Tipo de Contrato</th>
+                                        <th style="color: #1d5370;">Entidade Responsável</th>
+                                        <th style="color: #1d5370;">Periodicidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($garantiasVer as $gv) :
+                                        $hoje = date('Y-m-d');
+                                        $ativa = $gv->dataFim >= $hoje;
+                                    ?>
+                                    <tr>
+                                        <td class="small">
+                                            <?= date('d/m/Y', strtotime($gv->dataInicio)) ?> — <?= date('d/m/Y', strtotime($gv->dataFim)) ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($ativa) : ?>
+                                                <span class="badge text-white" style="background-color: #198754;">Ativa</span>
+                                            <?php else : ?>
+                                                <span class="badge bg-secondary">Expirada</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= $gv->temContrato ? htmlspecialchars($gv->tipoContrato ?? '-') : '<span class="text-muted">Sem contrato</span>' ?></td>
+                                        <td><?= htmlspecialchars($gv->entidadeResponsavel ?? '-') ?></td>
+                                        <td><?= htmlspecialchars($gv->periodicidade ?? '-') ?></td>
                                     </tr>
                                     <?php endforeach; ?>
                                 </tbody>

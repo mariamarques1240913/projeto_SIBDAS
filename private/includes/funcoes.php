@@ -13,6 +13,7 @@ function check_session()
     return isset($_SESSION['utilizador']);
 }
 
+// Chamada no topo de cada página privada — redireciona para login se não houver sessão ativa
 function redirect_if_not_logged($redirect_to = '/public/login.php')
 {
     start_session();
@@ -37,6 +38,7 @@ function perfil_atual()
     return $_SESSION['perfil'] ?? '';
 }
 
+// Redireciona para o dashboard se o perfil do utilizador não estiver na lista de permitidos
 function verificar_perfil(array $permitidos)
 {
     if (!in_array(perfil_atual(), $permitidos)) {
@@ -46,6 +48,7 @@ function verificar_perfil(array $permitidos)
     }
 }
 
+// Converte o ID para hex após encriptar — o resultado é seguro para usar em URLs
 function aes_encrypt($value)
 {
     $encrypted = openssl_encrypt($value, OPENSSL_METHOD, OPENSSL_KEY, OPENSSL_RAW_DATA, OPENSSL_IV);

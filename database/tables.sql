@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `Utilizador` (
   `nome` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `perfil` ENUM('administrador','profissional de saude','tecnico') NOT NULL DEFAULT 'profissional de saude',
   CONSTRAINT `pk_Utilizador` PRIMARY KEY (`codUtilizador`),
   CONSTRAINT `uq_Utilizador_username` UNIQUE (`username`),
   CONSTRAINT `uq_Utilizador_email` UNIQUE (`email`)
@@ -121,6 +122,7 @@ ALTER TABLE `Fornecedor`  ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `Localizacao` ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `Documento`   ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `Garantia`    ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `Utilizador`  ADD COLUMN `perfil` ENUM('administrador','profissional de saude','tecnico') NOT NULL DEFAULT 'profissional de saude';
 
 CREATE TABLE IF NOT EXISTS `ConteudoPortal` (
   `chave` varchar(50) NOT NULL,

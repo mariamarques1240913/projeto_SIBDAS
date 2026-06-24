@@ -10,17 +10,18 @@ try {
 
     // KPIs: contagens simples
     $totalEquipamentos    = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0")->fetchColumn();
+    $equipamentosAtivos   = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0 AND estado = 'Ativo'")->fetchColumn();
     $emManutencao         = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0 AND estado = 'Em manutencao'")->fetchColumn();
     $garantiasAlerta      = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE eliminado=0 AND dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
     $totalDocumentos      = $ligacao->query("SELECT COUNT(*) FROM Documento WHERE eliminado=0")->fetchColumn();
     // KPIs de alerta
     $equipamentosInativos = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0 AND estado != 'Ativo'")->fetchColumn();
     $garantiasExpiradas   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE eliminado=0 AND dataFim < CURDATE()")->fetchColumn();
+    // NOT EXISTS em vez de LEFT JOIN + IS NULL — garante que equipamentos com documentos eliminados continuam a contar como "sem documentação"
     $semDocumentacao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento e WHERE eliminado=0 AND NOT EXISTS (SELECT 1 FROM Documento d WHERE d.codInventario = e.codInventario AND d.eliminado=0)")->fetchColumn();
 
     // Gráfico donut: contagem por estado
     $dadosEstado = $ligacao->query("SELECT estado, COUNT(*) AS total FROM Equipamento WHERE eliminado=0 GROUP BY estado ORDER BY total DESC")->fetchAll(PDO::FETCH_OBJ);
-
     // Gráfico barras: contagem por serviço (top 6)
     $dadosServico = $ligacao->query("
         SELECT l.servico, COUNT(*) AS total
@@ -32,7 +33,7 @@ try {
         LIMIT 6
     ")->fetchAll(PDO::FETCH_OBJ);
 
-    // Tabela de alertas: equipamentos fora de serviço + garantias a expirar em 30 dias
+    // UNION ALL combina dois tipos de alertas numa só query — UNION ALL em vez de UNION porque não há duplicados possíveis entre as duas fontes
     $alertas = $ligacao->query("
         SELECT e.designacao, e.estado AS ocorrencia, l.servico, e.criticidade, 'estado' AS tipoAlerta
         FROM Equipamento e
@@ -52,7 +53,7 @@ try {
     $erro = '';
 } catch (PDOException $e) {
     $erro = "Erro ao ligar à base de dados.";
-    $totalEquipamentos = 0; $emManutencao = 0; $garantiasAlerta = 0; $totalDocumentos = 0;
+    $totalEquipamentos = 0; $equipamentosAtivos = 0; $emManutencao = 0; $garantiasAlerta = 0; $totalDocumentos = 0;
     $equipamentosInativos = 0; $garantiasExpiradas = 0; $semDocumentacao = 0;
     $dadosEstado = []; $dadosServico = []; $alertas = [];
 }
@@ -145,7 +146,22 @@ include 'includes/nav.php';
 
             <!-- KPIs de alerta -->
             <div class="row g-3 mb-4">
-                <div class="col-12 col-sm-6 col-lg-4">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #b2dfdb !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Equipamentos Ativos</h6>
+                                <span class="h3 fw-bold text-dark"><?= $equipamentosAtivos ?></span>
+                                <div class="small text-muted mt-1">estado "Ativo"</div>
+                            </div>
+                            <div class="fs-2 opacity-75" style="color: #b2dfdb;">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ef9a9a !important;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -160,7 +176,7 @@ include 'includes/nav.php';
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-lg-4">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ffcc80 !important;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -175,7 +191,7 @@ include 'includes/nav.php';
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-lg-4">
+                <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card border-0 shadow-sm rounded p-3 h-100 bg-white" style="border-left: 5px solid #ce93d8 !important;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>

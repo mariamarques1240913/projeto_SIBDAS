@@ -198,7 +198,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
             $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
             $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $ligacao->prepare("UPDATE Garantia SET codInventario=:codInventario, dataInicio=:dataInicio, dataFim=:dataFim, temContrato=:temContrato, tipoContrato=:tipoContrato, entidadeResponsavel=:entidadeResponsavel, periodicidade=:periodicidade, observacoes=:observacoes WHERE codGarantia=:id");
-            $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
             $stmt->execute([
                 ':codInventario'       => $codInventario,
                 ':dataInicio'          => $dataInicio,
@@ -208,6 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
                 ':entidadeResponsavel' => $entidadeResponsavel ?: null,
                 ':periodicidade'       => $periodicidade       ?: null,
                 ':observacoes'         => $observacoes         ?: null,
+                ':id'                  => $idDecriptado,
             ]);
             $ligacao = null;
             header('Location: garantias.php'); exit;

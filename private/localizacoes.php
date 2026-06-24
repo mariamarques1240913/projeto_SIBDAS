@@ -174,6 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
 try {
     $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Ordenação hierárquica: edificio, depois piso, depois servico
     $resultados = $ligacao->query("SELECT * FROM Localizacao WHERE eliminado=0 ORDER BY edificio, piso, servico")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {

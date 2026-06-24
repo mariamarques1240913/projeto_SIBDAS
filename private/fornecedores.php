@@ -125,10 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
 
     if (empty($nomeEmpresa))    $erros[] = "O nome da empresa é obrigatório.";
     if (empty($NIF))            $erros[] = "O NIF é obrigatório.";
-    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos.";
+    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos."; // NIF português: sempre 9 dígitos
     if (empty($tipoFornecedor)) $erros[] = "O tipo de fornecedor é obrigatório.";
     if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL))
         $erros[] = "O email não tem um formato válido.";
+    // Aceita formato internacional: +351 220 000 000, com espaços ou hífens
     if (!empty($contactoTelefonico) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $contactoTelefonico))
         $erros[] = "O contacto telefónico não tem um formato válido (ex: +351 220 000 000).";
     if (!empty($telefonePessoaContacto) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $telefonePessoaContacto))
@@ -184,10 +185,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
 
     if (empty($nomeEmpresa))    $erros[] = "O nome da empresa é obrigatório.";
     if (empty($NIF))            $erros[] = "O NIF é obrigatório.";
-    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos.";
+    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos."; // NIF português: sempre 9 dígitos
     if (empty($tipoFornecedor)) $erros[] = "O tipo de fornecedor é obrigatório.";
     if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL))
         $erros[] = "O email não tem um formato válido.";
+    // Aceita formato internacional: +351 220 000 000, com espaços ou hífens
     if (!empty($contactoTelefonico) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $contactoTelefonico))
         $erros[] = "O contacto telefónico não tem um formato válido (ex: +351 220 000 000).";
     if (!empty($telefonePessoaContacto) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $telefonePessoaContacto))
@@ -200,7 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
             $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
             $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt = $ligacao->prepare("UPDATE Fornecedor SET nomeEmpresa=:nomeEmpresa, NIF=:NIF, contactoTelefonico=:contactoTelefonico, email=:email, morada=:morada, website=:website, pessoaContacto=:pessoaContacto, telefonePessoaContacto=:telefonePessoaContacto, tipoFornecedor=:tipoFornecedor, observacoes=:observacoes WHERE codFornecedor=:id");
-            $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
             $stmt->execute([
                 ':nomeEmpresa'            => $nomeEmpresa,
                 ':NIF'                    => $NIF,
@@ -212,6 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
                 ':telefonePessoaContacto' => $telefonePessoaContacto ?: null,
                 ':tipoFornecedor'         => $tipoFornecedor,
                 ':observacoes'            => $observacoes            ?: null,
+                ':id'                     => $idDecriptado,
             ]);
             $ligacao = null;
             header('Location: fornecedores.php'); exit;
@@ -377,10 +379,10 @@ include 'includes/nav.php';
                             <label class="form-label fw-bold text-secondary small">Tipo de Fornecedor</label>
                             <select class="form-select" name="tipoFornecedor" required>
                                 <option value="" disabled <?= $v('tipoFornecedor') === '' ? 'selected' : '' ?>>Selecione...</option>
-                                <option value="Fabricante"          <?= $v('tipoFornecedor') === 'Fabricante'          ? 'selected' : '' ?>>Fabricante</option>
-                                <option value="Distribuidor"        <?= $v('tipoFornecedor') === 'Distribuidor'        ? 'selected' : '' ?>>Distribuidor</option>
-                                <option value="Assistência Técnica" <?= $v('tipoFornecedor') === 'Assistência Técnica' ? 'selected' : '' ?>>Assistência Técnica</option>
-                                <option value="Consumíveis"         <?= $v('tipoFornecedor') === 'Consumíveis'         ? 'selected' : '' ?>>Consumíveis</option>
+                                <option value="fabricante"          <?= $v('tipoFornecedor') === 'fabricante'          ? 'selected' : '' ?>>Fabricante</option>
+                                <option value="distribuidor"        <?= $v('tipoFornecedor') === 'distribuidor'        ? 'selected' : '' ?>>Distribuidor</option>
+                                <option value="assistencia tecnica" <?= $v('tipoFornecedor') === 'assistencia tecnica' ? 'selected' : '' ?>>Assistência Técnica</option>
+                                <option value="consumiveis"         <?= $v('tipoFornecedor') === 'consumiveis'         ? 'selected' : '' ?>>Consumíveis</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -391,7 +393,7 @@ include 'includes/nav.php';
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-secondary small">Website</label>
-                            <input type="url" class="form-control" name="website"
+                            <input type="text" class="form-control" name="website"
                                    placeholder="Ex: https://www.empresa.pt"
                                    value="<?= htmlspecialchars($v('website')) ?>">
                         </div>

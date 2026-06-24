@@ -3,6 +3,7 @@ define('APP_NAME', 'Hospitally');
 define('APP_VERSION', '1.0.0');
 define('APP_COPYRIGHT', '© 2026 Hospitally');
 
+// Necessário porque a aplicação corre dentro de um subdiretório no servidor
 define('BASE_URL', '/sibdas/1240913/hospitally');
 
 define('MYSQL_HOST',     'vsgate-s1.dei.isep.ipp.pt');
@@ -12,6 +13,7 @@ define('MYSQL_USERNAME', '1240913');
 define('MYSQL_PASSWORD', 'marques_913');
 define('MYSQL_AES_KEY',  'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');
 
+// Os IDs nos URLs são encriptados com AES-256-CBC para evitar IDOR
 define('OPENSSL_METHOD', 'AES-256-CBC');
 define('OPENSSL_KEY',    'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');
 define('OPENSSL_IV',     'Hospitally2026!X');
