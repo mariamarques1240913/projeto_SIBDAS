@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
             FROM Equipamento e
             LEFT JOIN Categoria c ON e.codCategoria = c.codCategoria
             LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
-            WHERE e.codInventario = :id
+            WHERE e.codInventario = :id AND e.eliminado = 0
         ");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['remover'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT codInventario, designacao, marca, modelo FROM Equipamento WHERE codInventario = :id");
+        $stmt = $ligacao->prepare("SELECT codInventario, designacao, marca, modelo FROM Equipamento WHERE codInventario = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $equipamentoRemover = $stmt->fetch(PDO::FETCH_OBJ);
@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
         $stmtNome->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmtNome->execute();
         $nomeEq = $stmtNome->fetchColumn() ?: "ID $idDecriptado";
-        $stmt = $ligacao->prepare("DELETE FROM Equipamento WHERE codInventario = :id");
+        $stmt = $ligacao->prepare("UPDATE Equipamento SET eliminado=1 WHERE codInventario = :id");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $ligacao->prepare("INSERT INTO RegistoEventos (acao, codInventario, descricao, codUtilizador) VALUES ('remover', ?, ?, ?)")
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['editar'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Equipamento WHERE codInventario = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Equipamento WHERE codInventario = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $equipamentoEditar = $stmt->fetch(PDO::FETCH_OBJ);
@@ -341,7 +341,7 @@ try {
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $filtroParams = [];
-    $filtroWhere  = [];
+    $filtroWhere  = ['e.eliminado = 0'];
     if ($filtro_q !== '') {
         $filtroWhere[]      = "(e.designacao LIKE :q OR e.marca LIKE :q OR e.modelo LIKE :q)";
         $filtroParams[':q'] = '%' . $filtro_q . '%';
@@ -373,8 +373,8 @@ try {
     $stmtLista->execute($filtroParams);
     $resultados   = $stmtLista->fetchAll(PDO::FETCH_OBJ);
     $categorias      = $ligacao->query("SELECT codCategoria, designacao FROM Categoria ORDER BY designacao")->fetchAll(PDO::FETCH_OBJ);
-    $localizacoes    = $ligacao->query("SELECT codLocalizacao, edificio, piso, servico FROM Localizacao ORDER BY edificio, servico")->fetchAll(PDO::FETCH_OBJ);
-    $todosFornecedores = $ligacao->query("SELECT codFornecedor, nomeEmpresa, tipoFornecedor FROM Fornecedor ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
+    $localizacoes    = $ligacao->query("SELECT codLocalizacao, edificio, piso, servico FROM Localizacao WHERE eliminado=0 ORDER BY edificio, servico")->fetchAll(PDO::FETCH_OBJ);
+    $todosFornecedores = $ligacao->query("SELECT codFornecedor, nomeEmpresa, tipoFornecedor FROM Fornecedor WHERE eliminado=0 ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {
     $erro = "Aconteceu um erro na ligação à base de dados.";

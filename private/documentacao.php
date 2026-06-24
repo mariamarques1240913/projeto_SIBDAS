@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
             FROM Documento d
             LEFT JOIN Equipamento e ON d.codInventario = e.codInventario
             LEFT JOIN Fornecedor f ON d.codFornecedor = f.codFornecedor
-            WHERE d.codDocumento = :id
+            WHERE d.codDocumento = :id AND d.eliminado = 0
         ");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['remover'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT codDocumento, nomeDocumento, tipoDocumento FROM Documento WHERE codDocumento = :id");
+        $stmt = $ligacao->prepare("SELECT codDocumento, nomeDocumento, tipoDocumento FROM Documento WHERE codDocumento = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $documentoRemover = $stmt->fetch(PDO::FETCH_OBJ);
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("DELETE FROM Documento WHERE codDocumento = :id");
+        $stmt = $ligacao->prepare("UPDATE Documento SET eliminado=1 WHERE codDocumento = :id");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $ligacao = null;
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['editar'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Documento WHERE codDocumento = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Documento WHERE codDocumento = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $documentoEditar = $stmt->fetch(PDO::FETCH_OBJ);
@@ -218,10 +218,11 @@ try {
         FROM Documento d
         LEFT JOIN Equipamento e ON d.codInventario = e.codInventario
         LEFT JOIN Fornecedor f ON d.codFornecedor = f.codFornecedor
+        WHERE d.eliminado = 0
         ORDER BY d.codDocumento DESC
     ")->fetchAll(PDO::FETCH_OBJ);
-    $equipamentos = $ligacao->query("SELECT codInventario, designacao, marca, modelo FROM Equipamento ORDER BY designacao")->fetchAll(PDO::FETCH_OBJ);
-    $fornecedores = $ligacao->query("SELECT codFornecedor, nomeEmpresa FROM Fornecedor ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
+    $equipamentos = $ligacao->query("SELECT codInventario, designacao, marca, modelo FROM Equipamento WHERE eliminado=0 ORDER BY designacao")->fetchAll(PDO::FETCH_OBJ);
+    $fornecedores = $ligacao->query("SELECT codFornecedor, nomeEmpresa FROM Fornecedor WHERE eliminado=0 ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {
     $erro = "Aconteceu um erro na ligação à base de dados.";

@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Fornecedor WHERE codFornecedor = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Fornecedor WHERE codFornecedor = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $fornecedorVer = $stmt->fetch(PDO::FETCH_OBJ);
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['remover'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT codFornecedor, nomeEmpresa, NIF FROM Fornecedor WHERE codFornecedor = :id");
+        $stmt = $ligacao->prepare("SELECT codFornecedor, nomeEmpresa, NIF FROM Fornecedor WHERE codFornecedor = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $fornecedorRemover = $stmt->fetch(PDO::FETCH_OBJ);
@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("DELETE FROM Fornecedor WHERE codFornecedor = :id");
+        $stmt = $ligacao->prepare("UPDATE Fornecedor SET eliminado=1 WHERE codFornecedor = :id");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $ligacao = null;
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['editar'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Fornecedor WHERE codFornecedor = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Fornecedor WHERE codFornecedor = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $fornecedorEditar = $stmt->fetch(PDO::FETCH_OBJ);
@@ -225,7 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
 try {
     $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $resultados = $ligacao->query("SELECT * FROM Fornecedor ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
+    $resultados = $ligacao->query("SELECT * FROM Fornecedor WHERE eliminado=0 ORDER BY nomeEmpresa")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {
     $erro = "Aconteceu um erro na ligação à base de dados.";

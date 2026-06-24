@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `Localizacao` (
   `piso` varchar(50) NOT NULL,
   `servico` varchar(100) NOT NULL,
   `sala` varchar(100),
+  `eliminado` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `pk_Localizacao` PRIMARY KEY (`codLocalizacao`)
 );
 
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS `Equipamento` (
   `estado` varchar(30) NOT NULL,
   `criticidade` varchar(20) NOT NULL,
   `observacoes` text,
+  `eliminado` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `pk_Equipamento` PRIMARY KEY (`codInventario`),
   CONSTRAINT `uq_Equipamento_serie` UNIQUE (`nrSerie`, `fabricante`, `modelo`),
   CONSTRAINT `ck_Equipamento_tipoEntrada` CHECK (`tipoEntrada` IN ('compra', 'doacao', 'aluguer', 'emprestimo')),
@@ -60,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `Fornecedor` (
   `telefonePessoaContacto` varchar(20),
   `tipoFornecedor` varchar(50) NOT NULL,
   `observacoes` text,
+  `eliminado` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `pk_Fornecedor` PRIMARY KEY (`codFornecedor`),
   CONSTRAINT `uq_Fornecedor_NIF` UNIQUE (`NIF`),
   CONSTRAINT `ck_Fornecedor_tipoFornecedor` CHECK (`tipoFornecedor` IN ('fabricante', 'distribuidor', 'assistencia tecnica', 'consumiveis'))
@@ -80,6 +83,7 @@ CREATE TABLE IF NOT EXISTS `Documento` (
   `dataDocumento` date,
   `dataValidade` date,
   `localizacaoFicheiro` varchar(255),
+  `eliminado` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `pk_Documento` PRIMARY KEY (`codDocumento`),
   CONSTRAINT `ck_Documento_tipoDocumento` CHECK (`tipoDocumento` IN ('manual utilizador', 'manual servico', 'certificado calibracao', 'contrato manutencao', 'fatura', 'declaracao conformidade', 'relatorio tecnico'))
 );
@@ -94,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `Garantia` (
   `entidadeResponsavel` varchar(150),
   `periodicidade` varchar(50),
   `observacoes` text,
+  `eliminado` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `pk_Garantia` PRIMARY KEY (`codGarantia`)
 );
 
@@ -110,6 +115,12 @@ ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Equipamento` FOREIGN KEY (`
 ALTER TABLE `Documento` ADD CONSTRAINT `fk_Documento_Fornecedor` FOREIGN KEY (`codFornecedor`) REFERENCES `Fornecedor` (`codFornecedor`);
 
 ALTER TABLE `Garantia` ADD CONSTRAINT `fk_Garantia_Equipamento` FOREIGN KEY (`codInventario`) REFERENCES `Equipamento` (`codInventario`);
+
+ALTER TABLE `Equipamento` ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `Fornecedor`  ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `Localizacao` ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `Documento`   ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `Garantia`    ADD COLUMN `eliminado` TINYINT(1) NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `ConteudoPortal` (
   `chave` varchar(50) NOT NULL,

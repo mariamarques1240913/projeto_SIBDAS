@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['ver'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Localizacao WHERE codLocalizacao = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Localizacao WHERE codLocalizacao = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $localizacaoVer = $stmt->fetch(PDO::FETCH_OBJ);
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['remover'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT codLocalizacao, edificio, servico FROM Localizacao WHERE codLocalizacao = :id");
+        $stmt = $ligacao->prepare("SELECT codLocalizacao, edificio, servico FROM Localizacao WHERE codLocalizacao = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $localizacaoRemover = $stmt->fetch(PDO::FETCH_OBJ);
@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("DELETE FROM Localizacao WHERE codLocalizacao = :id");
+        $stmt = $ligacao->prepare("UPDATE Localizacao SET eliminado=1 WHERE codLocalizacao = :id");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $ligacao = null;
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['editar'])) {
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $ligacao->prepare("SELECT * FROM Localizacao WHERE codLocalizacao = :id");
+        $stmt = $ligacao->prepare("SELECT * FROM Localizacao WHERE codLocalizacao = :id AND eliminado = 0");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
         $localizacaoEditar = $stmt->fetch(PDO::FETCH_OBJ);
@@ -173,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
 try {
     $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $resultados = $ligacao->query("SELECT * FROM Localizacao ORDER BY edificio, piso, servico")->fetchAll(PDO::FETCH_OBJ);
+    $resultados = $ligacao->query("SELECT * FROM Localizacao WHERE eliminado=0 ORDER BY edificio, piso, servico")->fetchAll(PDO::FETCH_OBJ);
     $erro = '';
 } catch (PDOException $err) {
     $erro = "Aconteceu um erro na ligação à base de dados.";

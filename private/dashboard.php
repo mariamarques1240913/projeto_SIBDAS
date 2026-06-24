@@ -9,24 +9,24 @@ try {
     $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // KPIs: contagens simples
-    $totalEquipamentos    = $ligacao->query("SELECT COUNT(*) FROM Equipamento")->fetchColumn();
-    $emManutencao         = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado = 'Em manutencao'")->fetchColumn();
-    $garantiasAlerta      = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
-    $totalDocumentos      = $ligacao->query("SELECT COUNT(*) FROM Documento")->fetchColumn();
+    $totalEquipamentos    = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0")->fetchColumn();
+    $emManutencao         = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0 AND estado = 'Em manutencao'")->fetchColumn();
+    $garantiasAlerta      = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE eliminado=0 AND dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)")->fetchColumn();
+    $totalDocumentos      = $ligacao->query("SELECT COUNT(*) FROM Documento WHERE eliminado=0")->fetchColumn();
     // KPIs de alerta
-    $equipamentosInativos = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE estado != 'Ativo'")->fetchColumn();
-    $garantiasExpiradas   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE dataFim < CURDATE()")->fetchColumn();
-    $semDocumentacao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento e WHERE NOT EXISTS (SELECT 1 FROM Documento d WHERE d.codInventario = e.codInventario)")->fetchColumn();
+    $equipamentosInativos = $ligacao->query("SELECT COUNT(*) FROM Equipamento WHERE eliminado=0 AND estado != 'Ativo'")->fetchColumn();
+    $garantiasExpiradas   = $ligacao->query("SELECT COUNT(*) FROM Garantia WHERE eliminado=0 AND dataFim < CURDATE()")->fetchColumn();
+    $semDocumentacao      = $ligacao->query("SELECT COUNT(*) FROM Equipamento e WHERE eliminado=0 AND NOT EXISTS (SELECT 1 FROM Documento d WHERE d.codInventario = e.codInventario AND d.eliminado=0)")->fetchColumn();
 
     // Gráfico donut: contagem por estado
-    $dadosEstado = $ligacao->query("SELECT estado, COUNT(*) AS total FROM Equipamento GROUP BY estado ORDER BY total DESC")->fetchAll(PDO::FETCH_OBJ);
+    $dadosEstado = $ligacao->query("SELECT estado, COUNT(*) AS total FROM Equipamento WHERE eliminado=0 GROUP BY estado ORDER BY total DESC")->fetchAll(PDO::FETCH_OBJ);
 
     // Gráfico barras: contagem por serviço (top 6)
     $dadosServico = $ligacao->query("
         SELECT l.servico, COUNT(*) AS total
         FROM Equipamento e
         LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
-        WHERE l.servico IS NOT NULL
+        WHERE e.eliminado=0 AND l.servico IS NOT NULL
         GROUP BY l.servico
         ORDER BY total DESC
         LIMIT 6
@@ -37,7 +37,7 @@ try {
         SELECT e.designacao, e.estado AS ocorrencia, l.servico, e.criticidade, 'estado' AS tipoAlerta
         FROM Equipamento e
         LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
-        WHERE e.estado != 'Ativo'
+        WHERE e.eliminado=0 AND e.estado != 'Ativo'
         UNION ALL
         SELECT e.designacao,
                CONCAT('Garantia expira em ', DATEDIFF(g.dataFim, CURDATE()), ' dia(s)') AS ocorrencia,
@@ -45,7 +45,7 @@ try {
         FROM Garantia g
         LEFT JOIN Equipamento e ON g.codInventario = e.codInventario
         LEFT JOIN Localizacao l ON e.codLocalizacao = l.codLocalizacao
-        WHERE g.dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+        WHERE g.eliminado=0 AND g.dataFim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
         LIMIT 10
     ")->fetchAll(PDO::FETCH_OBJ);
 
