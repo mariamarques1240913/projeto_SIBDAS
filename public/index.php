@@ -1,6 +1,30 @@
 <?php
 require_once '../config/config.php';
 
+$mensagemEnviada = false;
+$erroContacto    = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
+    $nome     = trim($_POST['nome']     ?? '');
+    $email    = trim($_POST['email']    ?? '');
+    $mensagem = trim($_POST['mensagem'] ?? '');
+    if ($nome && $email && $mensagem && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        try {
+            $dsnPub = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
+            $ligacao = new PDO($dsnPub, MYSQL_USERNAME, MYSQL_PASSWORD);
+            $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $ligacao->prepare("INSERT INTO MensagemContacto (nome, email, mensagem) VALUES (?,?,?)")->execute([$nome, $email, $mensagem]);
+            $ligacao = null;
+            $mensagemEnviada = true;
+        } catch (PDOException $e) {
+            $erroContacto = "Erro ao enviar a mensagem. Tente novamente.";
+            $ligacao = null;
+        }
+    } else {
+        $erroContacto = "Por favor preencha todos os campos corretamente e indique um email válido.";
+    }
+}
+
 try {
     $dsn_pub = "mysql:host=" . MYSQL_HOST . ";port=" . MYSQL_PORT . ";dbname=" . MYSQL_DATABASE . ";charset=utf8";
     $ligacao = new PDO($dsn_pub, MYSQL_USERNAME, MYSQL_PASSWORD);
@@ -77,21 +101,32 @@ $cp = fn($k, $d = '') => htmlspecialchars($cp_bd[$k] ?? $d);
 
     <section id="contacto">
         <h2>Pedido de Contacto / Esclarecimento</h2>
-        <form action="#" method="POST">
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome:</label>
-                <input type="text" id="nome" name="nome" class="form-control" placeholder="Introduza o seu nome completo" required>
+        <?php if ($mensagemEnviada) : ?>
+            <div class="alert alert-success text-center py-4">
+                <i class="fa-solid fa-circle-check fa-2x mb-2 d-block"></i>
+                <strong>Mensagem enviada com sucesso!</strong><br>
+                Entraremos em contacto brevemente através do email indicado.
             </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="O seu email para receber a resposta" required>
-            </div>
-            <div class="mb-3">
-                <label for="mensagem" class="form-label">Mensagem / Dúvida:</label>
-                <textarea id="mensagem" name="mensagem" class="form-control" rows="4" placeholder="Escreva aqui a sua mensagem..." required></textarea>
-            </div>
-            <button type="submit">Enviar Pedido</button>
-        </form>
+        <?php else : ?>
+            <?php if ($erroContacto) : ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($erroContacto) ?></div>
+            <?php endif; ?>
+            <form action="index.php" method="POST">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Introduza o seu nome completo" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="O seu email para receber a resposta" required>
+                </div>
+                <div class="mb-3">
+                    <label for="mensagem" class="form-label">Mensagem / Dúvida:</label>
+                    <textarea id="mensagem" name="mensagem" class="form-control" rows="4" placeholder="Escreva aqui a sua mensagem..." required></textarea>
+                </div>
+                <button type="submit">Enviar Pedido</button>
+            </form>
+        <?php endif; ?>
     </section>
 
     <footer class="rodape-site">

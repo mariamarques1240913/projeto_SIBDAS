@@ -124,6 +124,16 @@ CREATE TABLE IF NOT EXISTS `FAQ` (
   CONSTRAINT `pk_FAQ` PRIMARY KEY (`codFAQ`)
 );
 
+CREATE TABLE IF NOT EXISTS `MensagemContacto` (
+  `codMensagem` int NOT NULL AUTO_INCREMENT,
+  `nome`        varchar(150) NOT NULL,
+  `email`       varchar(150) NOT NULL,
+  `mensagem`    text NOT NULL,
+  `dataHora`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lida`        boolean NOT NULL DEFAULT 0,
+  CONSTRAINT `pk_MensagemContacto` PRIMARY KEY (`codMensagem`)
+);
+
 CREATE TABLE IF NOT EXISTS `RegistoEventos` (
   `codEvento`     int NOT NULL AUTO_INCREMENT,
   `acao`          varchar(20) NOT NULL,
