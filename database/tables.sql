@@ -123,3 +123,13 @@ CREATE TABLE IF NOT EXISTS `FAQ` (
   `resposta` text NOT NULL,
   CONSTRAINT `pk_FAQ` PRIMARY KEY (`codFAQ`)
 );
+
+CREATE TABLE IF NOT EXISTS `RegistoEventos` (
+  `codEvento`     int NOT NULL AUTO_INCREMENT,
+  `acao`          varchar(20) NOT NULL,
+  `codInventario` int NOT NULL,
+  `descricao`     varchar(255),
+  `dataHora`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `codUtilizador` int,
+  CONSTRAINT `pk_RegistoEventos` PRIMARY KEY (`codEvento`)
+);

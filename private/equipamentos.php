@@ -99,9 +99,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "remover"
     try {
         $ligacao = new PDO($dsn, MYSQL_USERNAME, MYSQL_PASSWORD);
         $ligacao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmtNome = $ligacao->prepare("SELECT CONCAT(designacao, ' (', marca, ' / ', modelo, ')') FROM Equipamento WHERE codInventario = :id");
+        $stmtNome->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
+        $stmtNome->execute();
+        $nomeEq = $stmtNome->fetchColumn() ?: "ID $idDecriptado";
         $stmt = $ligacao->prepare("DELETE FROM Equipamento WHERE codInventario = :id");
         $stmt->bindParam(':id', $idDecriptado, PDO::PARAM_INT);
         $stmt->execute();
+        $ligacao->prepare("INSERT INTO RegistoEventos (acao, codInventario, descricao, codUtilizador) VALUES ('remover', ?, ?, ?)")
+            ->execute([$idDecriptado, $nomeEq, $_SESSION['codUtilizador'] ?? null]);
         $ligacao = null;
         header('Location: equipamentos.php');
         exit;
@@ -206,6 +212,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
                 $stmtForn = $ligacao->prepare("INSERT IGNORE INTO EquipamentoFornecedor (codInventario, codFornecedor) VALUES (?, ?)");
                 foreach ($fornecedoresPost as $fId) { $stmtForn->execute([$novoId, $fId]); }
             }
+            if ($novoId) {
+                $ligacao->prepare("INSERT INTO RegistoEventos (acao, codInventario, descricao, codUtilizador) VALUES ('inserir', ?, ?, ?)")
+                    ->execute([$novoId, "$designacao ($marca / $modelo)", $_SESSION['codUtilizador'] ?? null]);
+            }
             $ligacao = null;
             header('Location: equipamentos.php');
             exit;
@@ -287,6 +297,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
                 $stmtForn = $ligacao->prepare("INSERT IGNORE INTO EquipamentoFornecedor (codInventario, codFornecedor) VALUES (?, ?)");
                 foreach ($fornecedoresPost as $fId) { $stmtForn->execute([$idDecriptado, $fId]); }
             }
+            $ligacao->prepare("INSERT INTO RegistoEventos (acao, codInventario, descricao, codUtilizador) VALUES ('editar', ?, ?, ?)")
+                ->execute([$idDecriptado, "$designacao ($marca / $modelo)", $_SESSION['codUtilizador'] ?? null]);
             $ligacao = null;
             header('Location: equipamentos.php');
             exit;

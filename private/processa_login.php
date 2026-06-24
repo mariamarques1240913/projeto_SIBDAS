@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/funcoes.php';
 start_session();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /projeto_SIBDAS/public/login.php');
+    header('Location: ' . BASE_URL . '/public/login.php');
     exit;
 }
 
@@ -22,7 +22,7 @@ if (empty($password)) {
 
 if (!empty($validation_errors)) {
     $_SESSION['validation_errors'] = $validation_errors;
-    header('Location: /projeto_SIBDAS/public/login.php');
+    header('Location: ' . BASE_URL . '/public/login.php');
     exit;
 }
 
@@ -40,16 +40,17 @@ try {
 
     if (!$utilizador || !password_verify($password, $utilizador->password)) {
         $_SESSION['server_error'] = 'Email ou password incorretos.';
-        header('Location: /projeto_SIBDAS/public/login.php');
+        header('Location: ' . BASE_URL . '/public/login.php');
         exit;
     }
 
-    $_SESSION['utilizador'] = $utilizador->nome;
-    header('Location: /projeto_SIBDAS/private/dashboard.php');
+    $_SESSION['utilizador']     = $utilizador->nome;
+    $_SESSION['codUtilizador']  = $utilizador->codUtilizador;
+    header('Location: ' . BASE_URL . '/private/dashboard.php');
     exit;
 } catch (PDOException $e) {
     $ligacao = null;
     $_SESSION['server_error'] = 'Erro ao ligar à base de dados.';
-    header('Location: /projeto_SIBDAS/public/login.php');
+    header('Location: ' . BASE_URL . '/public/login.php');
     exit;
 }
