@@ -18,6 +18,9 @@ $perfilLabel = ['administrador' => 'Administrador', 'tecnico' => 'Técnico', 'pr
                     <span class="badge ms-2" style="background-color:#1d5370; font-size:0.7em;"><?= htmlspecialchars($perfilLabel) ?></span>
                 <?php endif; ?>
             </span>
+            <a href="<?= BASE_URL ?>/private/alterar_password.php" class="btn btn-sm btn-outline-light me-2 px-3" title="Alterar palavra-passe">
+                <i class="fa-solid fa-lock"></i>
+            </a>
             <a href="<?= BASE_URL ?>/public/logout.php" class="btn btn-sm btn-light fw-bold px-3" style="color: #1d5370;">
                 Sair <i class="fa-solid fa-right-from-bracket ms-1"></i>
             </a>
