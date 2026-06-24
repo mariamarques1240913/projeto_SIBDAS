@@ -128,6 +128,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
     if (empty($codInventario)) $erros[] = "O equipamento associado é obrigatório.";
     if (empty($tipoDocumento)) $erros[] = "O tipo de documento é obrigatório.";
     if (empty($nomeDocumento)) $erros[] = "O nome do documento é obrigatório.";
+    if (!empty($dataDocumento) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataDocumento))
+        $erros[] = "Formato de data do documento inválido.";
+    if (!empty($dataValidade) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataValidade))
+        $erros[] = "Formato de data de validade inválido.";
+    if (!empty($dataDocumento) && !empty($dataValidade) && $dataValidade < $dataDocumento)
+        $erros[] = "A data de validade não pode ser anterior à data do documento.";
 
     if (empty($erros)) {
         try {
@@ -172,6 +178,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
     if (empty($codInventario)) $erros[] = "O equipamento associado é obrigatório.";
     if (empty($tipoDocumento)) $erros[] = "O tipo de documento é obrigatório.";
     if (empty($nomeDocumento)) $erros[] = "O nome do documento é obrigatório.";
+    if (!empty($dataDocumento) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataDocumento))
+        $erros[] = "Formato de data do documento inválido.";
+    if (!empty($dataValidade) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataValidade))
+        $erros[] = "Formato de data de validade inválido.";
+    if (!empty($dataDocumento) && !empty($dataValidade) && $dataValidade < $dataDocumento)
+        $erros[] = "A data de validade não pode ser anterior à data do documento.";
 
     if (empty($erros)) {
         try {

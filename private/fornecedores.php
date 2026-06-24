@@ -124,7 +124,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
 
     if (empty($nomeEmpresa))    $erros[] = "O nome da empresa é obrigatório.";
     if (empty($NIF))            $erros[] = "O NIF é obrigatório.";
+    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos.";
     if (empty($tipoFornecedor)) $erros[] = "O tipo de fornecedor é obrigatório.";
+    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL))
+        $erros[] = "O email não tem um formato válido.";
+    if (!empty($contactoTelefonico) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $contactoTelefonico))
+        $erros[] = "O contacto telefónico não tem um formato válido (ex: +351 220 000 000).";
+    if (!empty($telefonePessoaContacto) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $telefonePessoaContacto))
+        $erros[] = "O telefone da pessoa de contacto não tem um formato válido.";
+    if (!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
+        $erros[] = "O website não tem um formato válido (ex: https://www.exemplo.pt).";
 
     if (empty($erros)) {
         try {
@@ -174,7 +183,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
 
     if (empty($nomeEmpresa))    $erros[] = "O nome da empresa é obrigatório.";
     if (empty($NIF))            $erros[] = "O NIF é obrigatório.";
+    elseif (!preg_match('/^\d{9}$/', $NIF)) $erros[] = "O NIF deve ter exatamente 9 dígitos numéricos.";
     if (empty($tipoFornecedor)) $erros[] = "O tipo de fornecedor é obrigatório.";
+    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL))
+        $erros[] = "O email não tem um formato válido.";
+    if (!empty($contactoTelefonico) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $contactoTelefonico))
+        $erros[] = "O contacto telefónico não tem um formato válido (ex: +351 220 000 000).";
+    if (!empty($telefonePessoaContacto) && !preg_match('/^\+?[\d\s\-]{9,15}$/', $telefonePessoaContacto))
+        $erros[] = "O telefone da pessoa de contacto não tem um formato válido.";
+    if (!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
+        $erros[] = "O website não tem um formato válido (ex: https://www.exemplo.pt).";
 
     if (empty($erros)) {
         try {

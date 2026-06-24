@@ -179,9 +179,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "novo") {
     if (empty($estado))         $erros[] = "O estado é obrigatório.";
     if (empty($codLocalizacao)) $erros[] = "A localização é obrigatória.";
     if (empty($criticidade))    $erros[] = "A criticidade é obrigatória.";
-    if (!empty($dataAquisicao) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataAquisicao)) {
-        $erros[] = "Formato de data inválido (use AAAA-MM-DD).";
+    if (!empty($dataAquisicao)) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataAquisicao))
+            $erros[] = "Formato de data de aquisição inválido (use AAAA-MM-DD).";
+        elseif ($dataAquisicao > date('Y-m-d'))
+            $erros[] = "A data de aquisição não pode ser no futuro.";
     }
+    if (!empty($anoFabrico)) {
+        $anoAtual = (int)date('Y');
+        if (!ctype_digit($anoFabrico) || (int)$anoFabrico < 1900 || (int)$anoFabrico > $anoAtual)
+            $erros[] = "O ano de fabrico deve ser um valor entre 1900 e $anoAtual.";
+    }
+    if (!empty($custoAquisicao) && (!is_numeric($custoAquisicao) || (float)$custoAquisicao <= 0))
+        $erros[] = "O custo de aquisição deve ser um valor positivo.";
 
     if (empty($erros)) {
         try {
@@ -262,9 +272,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && ($_POST["acao"] ?? "") === "editar")
     if (empty($estado))         $erros[] = "O estado é obrigatório.";
     if (empty($codLocalizacao)) $erros[] = "A localização é obrigatória.";
     if (empty($criticidade))    $erros[] = "A criticidade é obrigatória.";
-    if (!empty($dataAquisicao) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataAquisicao)) {
-        $erros[] = "Formato de data inválido.";
+    if (!empty($dataAquisicao)) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dataAquisicao))
+            $erros[] = "Formato de data de aquisição inválido (use AAAA-MM-DD).";
+        elseif ($dataAquisicao > date('Y-m-d'))
+            $erros[] = "A data de aquisição não pode ser no futuro.";
     }
+    if (!empty($anoFabrico)) {
+        $anoAtual = (int)date('Y');
+        if (!ctype_digit($anoFabrico) || (int)$anoFabrico < 1900 || (int)$anoFabrico > $anoAtual)
+            $erros[] = "O ano de fabrico deve ser um valor entre 1900 e $anoAtual.";
+    }
+    if (!empty($custoAquisicao) && (!is_numeric($custoAquisicao) || (float)$custoAquisicao <= 0))
+        $erros[] = "O custo de aquisição deve ser um valor positivo.";
 
     if (empty($erros)) {
         try {
